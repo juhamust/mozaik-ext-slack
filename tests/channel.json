@@ -1,0 +1,24 @@
+{
+  "id": "C02GVP9DZ",
+  "name": "test-juham",
+  "is_channel": true,
+  "created": 1408772266,
+  "creator": "U023BECGF",
+  "is_archived": false,
+  "is_general": false,
+  "is_member": true,
+  "members": [
+    "U023BECGF"
+  ],
+  "topic": {
+    "value": "",
+    "creator": "",
+    "last_set": 0
+  },
+  "purpose": {
+    "value": "bobby",
+    "creator": "U023BECGF",
+    "last_set": 1408772266
+  },
+  "num_members": 1
+}
