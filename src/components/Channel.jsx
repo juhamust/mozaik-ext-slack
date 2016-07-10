@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import reactMixin from 'react-mixin';
 import { ListenerMixin } from 'reflux';
 import Mozaik from 'mozaik/browser';
+import classNames from 'classnames';
 
 class Channel extends Component {
   constructor(props) {
@@ -44,17 +45,22 @@ class Channel extends Component {
   render() {
     const { message } = this.state;
     let content = {
+      empty: true,
       title: this.props.title || (this.props.channel ? `Slack ${this.props.channel}` : 'Slack'),
-      text: '--',
+      text: 'Send msg in Slack',
       avatar: ''
     };
 
     // Override actual content
     if (message) {
+      content.empty = false;
       content.text = message.text;
       content.author = message.user.real_name;
       content.avatar = message.user.profile.image_48;
     }
+
+    // Construct classes
+    content.class = classNames('slack-channel__message--value', { 'slack-channel__message--empty': content.empty });
 
     return (<div>
       <div className="widget__header">
@@ -63,7 +69,7 @@ class Channel extends Component {
       </div>
       <div className="widget__body">
         <div className="slack-channel__message">
-          <div className="slack-channel__message--value">{content.text}</div>
+          <div className={content.class}>{content.text}</div>
         </div>
         <div className="slack-channel__footer">
           <div className="slack-channel__footer--avatar"><img src={content.avatar} /></div>
