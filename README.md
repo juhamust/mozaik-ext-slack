@@ -1,6 +1,6 @@
 # mozaik-ext-slack
 
-Module provides some Slack widgets for Mozaïk dashboard.
+Module provides some [Slack](https://slack.com) widgets for [Mozaïk dashboard](http://mozaik.rocks/).
 
 ![preview-channel](https://raw.githubusercontent.com/juhamust/mozaik-ext-slack/master/preview/channel.png)
 

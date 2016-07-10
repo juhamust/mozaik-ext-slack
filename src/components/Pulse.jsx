@@ -19,8 +19,8 @@ function pulse(colorIndex = 0) {
 
   d3.select('svg')
     .append('circle')
-    .attr('cx', 150)
-    .attr('cy', 150)
+    .attr('cx', 100)
+    .attr('cy', 100)
     .attr('r', 30)
     .attr('stroke-width', 20)
     .attr('fill', 'transparent')
@@ -42,7 +42,9 @@ class Pulse extends Component {
   }
 
   getApiRequest() {
-    return { id: 'slack.message' };
+    return {
+      id: 'slack.message'
+    };
   }
 
   onApiData(data) {
@@ -75,8 +77,8 @@ class Pulse extends Component {
           <span className="widget__header__subject">{title}</span>
           <i className="fa fa-comment-o" />
         </div>
-        <div className="slack__body widget__body">
-          <svg height="300" width="300"></svg>
+        <div className="slack__pulse--body widget__body">
+          <svg height="200" width="200"></svg>
         </div>
       </div>
     );
@@ -84,7 +86,12 @@ class Pulse extends Component {
 }
 
 Pulse.propTypes = {
-  title: React.PropTypes.string
+  title: React.PropTypes.string,
+  channel: React.PropTypes.string
+};
+
+Pulse.defaultProps = {
+  channel: 'all'
 };
 
 // apply the mixins on the component

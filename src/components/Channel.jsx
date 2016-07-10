@@ -3,6 +3,7 @@ import reactMixin from 'react-mixin';
 import { ListenerMixin } from 'reflux';
 import Mozaik from 'mozaik/browser';
 import classNames from 'classnames';
+import Since from './Since.jsx';
 
 class Channel extends Component {
   constructor(props) {
@@ -48,15 +49,18 @@ class Channel extends Component {
       empty: true,
       title: this.props.title || (this.props.channel ? `Slack ${this.props.channel}` : 'Slack'),
       text: 'Send msg in Slack',
-      avatar: ''
+      avatar: '',
+      date: null
     };
 
     // Override actual content
     if (message) {
+      const now = new Date();
       content.empty = false;
       content.text = message.text;
       content.author = message.user.real_name;
       content.avatar = message.user.profile.image_48;
+      content.date = (<Since time={now}></Since>);
     }
 
     // Construct classes
@@ -73,8 +77,10 @@ class Channel extends Component {
         </div>
         <div className="slack-channel__footer">
           <div className="slack-channel__footer--avatar"><img src={content.avatar} /></div>
-          <div className="slack-channel__footer--author">{content.author}</div>
-          <div className="slack-channel__footer--date"></div>
+          <div className="slack-channel__footer--meta">
+            <div className="slack-channel__footer--author">{content.author}</div>
+            <div className="slack-channel__footer--date">{content.date}</div>
+          </div>
         </div>
       </div>
     </div>);
@@ -84,6 +90,10 @@ class Channel extends Component {
 Channel.propTypes = {
   title: React.PropTypes.string,
   channel: React.PropTypes.string
+};
+
+Channel.defaultProps = {
+  channel: 'all'
 };
 
 // apply the mixins on the component
