@@ -23,8 +23,9 @@ class Channel extends Component {
   }
 
   getApiRequest() {
+    const requestId = this.props.channel ? `slack.message.${this.props.channel}` : 'slack.message';
     return {
-      id: `slack.message.${this.props.channel}`,
+      id: requestId,
       params: {
         channel: this.props.channel
       }
@@ -32,8 +33,6 @@ class Channel extends Component {
   }
 
   onApiData(message) {
-    console.log(message);
-
     if (!this.mounted) {
       console.warn('Component is not yet/more mounted. Skipping.');
       return;
@@ -93,7 +92,7 @@ Channel.propTypes = {
 };
 
 Channel.defaultProps = {
-  channel: 'all'
+  channel: null
 };
 
 // apply the mixins on the component

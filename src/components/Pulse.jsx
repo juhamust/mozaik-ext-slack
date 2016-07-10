@@ -14,10 +14,10 @@ const colors = [
   { r: 61, g: 186, b: 145 } // green
 ];
 
-function pulse(colorIndex = 0) {
-  const color = colors[colorIndex];
+function pulse(opts) {
+  const color = colors[opts.colorIndex || 0];
 
-  d3.select('svg')
+  d3.select(opts.element)
     .append('circle')
     .attr('cx', 100)
     .attr('cy', 100)
@@ -42,8 +42,12 @@ class Pulse extends Component {
   }
 
   getApiRequest() {
+    const requestId = this.props.channel ? `slack.message.${this.props.channel}` : 'slack.message';
     return {
-      id: 'slack.message'
+      id: requestId,
+      params: {
+        channel: this.props.channel
+      }
     };
   }
 
@@ -56,7 +60,10 @@ class Pulse extends Component {
     // NOTE: Modifying DOM with D3 is not ideal, consider
     // using https://github.com/Olical/react-faux-dom later on
     if (this.mounted) {
-      pulse(nextIndex);
+      pulse({
+        element: this._svg.getDOMNode(),
+        colorIndex: nextIndex
+      });
     }
   }
 
@@ -78,7 +85,7 @@ class Pulse extends Component {
           <i className="fa fa-comment-o" />
         </div>
         <div className="slack__pulse--body widget__body">
-          <svg height="200" width="200"></svg>
+          <svg ref={(c) => this._svg = c} height="200" width="200"></svg>
         </div>
       </div>
     );
@@ -91,7 +98,7 @@ Pulse.propTypes = {
 };
 
 Pulse.defaultProps = {
-  channel: 'all'
+  channel: null
 };
 
 // apply the mixins on the component

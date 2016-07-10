@@ -100,7 +100,6 @@ const client = mozaik => {
         params.channel = params.channel.replace('#', '');
       }
 
-      //console.log('Channel params', params);
       bot.message((message) => {
         Promise.all([
           getUser(token, { id: message.user }),
@@ -116,7 +115,7 @@ const client = mozaik => {
 
           // Filter with params
           if (params.channel && params.channel !== channel.name) {
-            //console.log('Skip');
+            //console.log('Skip', params.channel, 'vs', channel.name, message);
             return;
           }
 

@@ -45,7 +45,11 @@ class Since extends Component {
 }
 
 Since.propTypes = {
-  time: React.PropTypes.string
+  time: React.PropTypes.oneOfType([
+    React.PropTypes.string,
+    React.PropTypes.number,
+    React.PropTypes.instanceOf(Date)
+  ])
 };
 Since.defaultProps = {
   time: moment()
