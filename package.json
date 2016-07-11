@@ -32,6 +32,7 @@
     "react-mixin": "3.0.4",
     "reflux": "0.4.1",
     "slack": "^7.3.0",
+    "slack-remove-formatting": "^0.1.1",
     "superagent": "1.8.3",
     "superagent-bluebird-promise": "3.0.0",
     "validator": "^3.30.0"

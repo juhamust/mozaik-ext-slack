@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import chalk from 'chalk';
 import _ from 'lodash';
 import slack from 'slack';
+import getFormatRemover from 'slack-remove-formatting';
 import config from './config';
 
 const reConnectInterval = 30 * 30 * 1000; // 30mins
@@ -107,6 +108,13 @@ const client = mozaik => {
         ])
         .then((output) => {
           const [user, channel] = output;
+
+          // Remove Slack syntax to make outcome more readable
+          const removeFormat = getFormatRemover({
+            users: users,
+            channels: channels
+          });
+          message.text = removeFormat(message.text || '');
 
           if (!user || !channel) {
             console.warn('User and/or channel not found. Message from private channel?');
