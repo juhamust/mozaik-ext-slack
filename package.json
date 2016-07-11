@@ -26,6 +26,7 @@
     "d3": "^4.1.0",
     "d3-ease": "^1.0.0",
     "dotenv": "^2.0.0",
+    "emojilib": "^2.0.2",
     "lodash": "^3.10.1",
     "pretty-print": "^1.0.0",
     "react-classset": "0.0.2",

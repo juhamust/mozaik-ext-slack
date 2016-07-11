@@ -2,6 +2,8 @@ import test from 'ava';
 import proxyquire from 'proxyquire';
 import slackMock from './slack.mock';
 import mozaikMock from './mozaik.mock';
+import emoji from 'emojilib';
+import { replaceEmojis } from '../src/client';
 
 // Mock the slack API
 const client = proxyquire('../src/client', slackMock).default;
@@ -16,4 +18,8 @@ test.cb('slack channel', t => {
   };
 
   return client(mozaikMock).message(send);
+});
+
+test.only('replace emojis', t => {
+  t.is(replaceEmojis('testing :smile: :+1:'), `testing ${emoji.lib.smile.char} ${emoji.lib['+1'].char}`);
 });

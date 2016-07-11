@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import chalk from 'chalk';
 import _ from 'lodash';
 import slack from 'slack';
+import emoji from 'emojilib';
 import getFormatRemover from 'slack-remove-formatting';
 import config from './config';
 
@@ -64,6 +65,18 @@ function getUser(token, opts) {
     });
 }
 
+/**
+ * Replace multiple emojis from text like "hello there! :smile: :smirk:"
+ */
+function replaceEmojis(text, offset = 0) {
+  const match = text.match(/(:((\w|\+|_)+):)+/);
+  if (match) {
+    const postIndex = match.index + match[0].length;
+    text = text.substr(offset, postIndex).replace(match[1], emoji.lib[match[2]].char) + replaceEmojis(text.substr(postIndex));
+  }
+  return text;
+}
+
 // Create backend client for extension
 const client = mozaik => {
   mozaik.loadApiConfig(config);
@@ -115,6 +128,7 @@ const client = mozaik => {
             channels: channels
           });
           message.text = removeFormat(message.text || '');
+          message.text = replaceEmojis(message.text);
 
           if (!user || !channel) {
             console.warn('User and/or channel not found. Message from private channel?');
@@ -161,3 +175,4 @@ const client = mozaik => {
 };
 
 export default client;
+export { replaceEmojis };
