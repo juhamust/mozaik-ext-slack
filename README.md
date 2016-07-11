@@ -1,6 +1,6 @@
 # mozaik-ext-slack
 
-Module provides some Slack widgets for Mozaïk dashboard.
+Module provides some [Slack](https://slack.com) widgets for [Mozaïk dashboard](http://mozaik.rocks/).
 
 ![preview-channel](https://raw.githubusercontent.com/juhamust/mozaik-ext-slack/master/preview/channel.png)
 
@@ -139,3 +139,15 @@ key           | required | description
 ## License
 
 Distributed under the MIT license
+
+## Changelog
+
+# Release 0.2.0
+
+- Added since time information
+- Fixed issue when having multiple pulse widgets
+- Improved style
+
+# Release 0.1.0
+
+- Initial somewhat working version

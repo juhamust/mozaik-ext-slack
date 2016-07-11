@@ -1,13 +1,18 @@
 .slack-channel__message
   position: absolute
-  top: 45%
+  top: 20%
   width: 100%
   text-align: center
   font-size 2rem
+  line-height 2.5rem
 
 .slack-channel__message--value
   color white
   margin: 0 1.6vmin
+
+.slack-channel__message--empty
+  color: lighten($widget-bg-color, 20);
+  text-shadow: 0 -2px 0 $label-bg-color;
 
 .slack-channel__footer
   position absolute
@@ -18,10 +23,19 @@
 .slack-channel__footer--avatar
   float left
 
-.slack-channel__footer--author
+.slack-channel__footer--meta
   float left
+
+.slack-channel__footer--author
+  float none
+  margin-left 1.6vmin
+  font-size 2vmin
+
+.slack-channel__footer--date
+  float none
   margin-left 1.6vmin
   font-size 1.6vmin
 
-.slack__body
+.slack__pulse--body
   text-align center
+  position relative

@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import reactMixin from 'react-mixin';
 import { ListenerMixin } from 'reflux';
 import Mozaik from 'mozaik/browser';
+import classNames from 'classnames';
+import moment from 'moment';
+import Since from './Since.jsx';
 
 class Channel extends Component {
   constructor(props) {
@@ -21,8 +24,9 @@ class Channel extends Component {
   }
 
   getApiRequest() {
+    const requestId = this.props.channel ? `slack.message.${this.props.channel}` : 'slack.message';
     return {
-      id: `slack.message.${this.props.channel}`,
+      id: requestId,
       params: {
         channel: this.props.channel
       }
@@ -30,8 +34,6 @@ class Channel extends Component {
   }
 
   onApiData(message) {
-    console.log(message);
-
     if (!this.mounted) {
       console.warn('Component is not yet/more mounted. Skipping.');
       return;
@@ -44,17 +46,25 @@ class Channel extends Component {
   render() {
     const { message } = this.state;
     let content = {
+      empty: true,
       title: this.props.title || (this.props.channel ? `Slack ${this.props.channel}` : 'Slack'),
-      text: '--',
-      avatar: ''
+      text: 'Send msg in Slack',
+      avatar: '',
+      date: null
     };
 
     // Override actual content
     if (message) {
+      const time = message.ts ? moment.unix(message.ts) : new Date();
+      content.empty = false;
       content.text = message.text;
       content.author = message.user.real_name;
       content.avatar = message.user.profile.image_48;
+      content.date = (<Since time={time}></Since>);
     }
+
+    // Construct classes
+    content.class = classNames('slack-channel__message--value', { 'slack-channel__message--empty': content.empty });
 
     return (<div>
       <div className="widget__header">
@@ -63,12 +73,14 @@ class Channel extends Component {
       </div>
       <div className="widget__body">
         <div className="slack-channel__message">
-          <div className="slack-channel__message--value">{content.text}</div>
+          <div className={content.class}>{content.text}</div>
         </div>
         <div className="slack-channel__footer">
           <div className="slack-channel__footer--avatar"><img src={content.avatar} /></div>
-          <div className="slack-channel__footer--author">{content.author}</div>
-          <div className="slack-channel__footer--date"></div>
+          <div className="slack-channel__footer--meta">
+            <div className="slack-channel__footer--author">{content.author}</div>
+            <div className="slack-channel__footer--date">{content.date}</div>
+          </div>
         </div>
       </div>
     </div>);
@@ -78,6 +90,10 @@ class Channel extends Component {
 Channel.propTypes = {
   title: React.PropTypes.string,
   channel: React.PropTypes.string
+};
+
+Channel.defaultProps = {
+  channel: null
 };
 
 // apply the mixins on the component
