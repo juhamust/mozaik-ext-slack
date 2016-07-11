@@ -139,3 +139,15 @@ key           | required | description
 ## License
 
 Distributed under the MIT license
+
+## Changelog
+
+# Release 0.2.0
+
+- Added since time information
+- Fixed issue when having multiple pulse widgets
+- Improved style
+
+# Release 0.1.0
+
+- Initial somewhat working version

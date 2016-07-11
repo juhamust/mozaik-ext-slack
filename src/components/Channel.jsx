@@ -3,6 +3,7 @@ import reactMixin from 'react-mixin';
 import { ListenerMixin } from 'reflux';
 import Mozaik from 'mozaik/browser';
 import classNames from 'classnames';
+import moment from 'moment';
 import Since from './Since.jsx';
 
 class Channel extends Component {
@@ -54,12 +55,12 @@ class Channel extends Component {
 
     // Override actual content
     if (message) {
-      const now = new Date();
+      const time = message.ts ? moment.unix(message.ts) : new Date();
       content.empty = false;
       content.text = message.text;
       content.author = message.user.real_name;
       content.avatar = message.user.profile.image_48;
-      content.date = (<Since time={now}></Since>);
+      content.date = (<Since time={time}></Since>);
     }
 
     // Construct classes
