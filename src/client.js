@@ -1,9 +1,13 @@
 import path from 'path';
+import fs from 'fs';
+import request from 'request';
+import zlib from 'zlib';
 import dotenv from 'dotenv';
 import chalk from 'chalk';
 import _ from 'lodash';
 import slack from 'slack';
 import emoji from 'emojilib';
+import moment from 'moment';
 import getFormatRemover from 'slack-remove-formatting';
 import config from './config';
 
@@ -65,6 +69,22 @@ function getUser(token, opts) {
     });
 }
 
+function getFile(token, opts = {}) {
+  if (!opts.file) {
+    return Promise.resolve();
+  }
+
+  const outputPath = path.join(opts.publicDir, `${moment().valueOf()}.${opts.file.filetype}`);
+  return downloadFile(token, {
+    url: opts.file.url_private_download,
+    outputPath: outputPath
+  })
+  .then(() => {
+    console.log(`Downloaded file ${opts.file.title}`);
+    return Promise.resolve(outputPath);
+  });
+}
+
 /**
  * Replace multiple emojis from text like "hello there! :smile: :smirk:"
  */
@@ -80,10 +100,52 @@ function replaceEmojis(text, offset = 0) {
   return text;
 }
 
+function downloadFile(token, opts = {}) {
+  const options = {
+    url: opts.url,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'accept-encoding': 'gzip,deflate'
+    }};
+
+  return new Promise((resolve, reject) => {
+    const downloadRequest = (options, outStream) => {
+      const req = request(options);
+      const ready = () =>  {
+        resolve({});
+      };
+
+      req.on('response', function (res) {
+        if (res.statusCode !== 200) {
+          reject(new Error('Received 200 response'));
+        }
+
+        const encoding = res.headers['content-encoding'];
+        if (encoding == 'gzip') {
+          res.pipe(zlib.createGunzip()).pipe(outStream).on('finish', ready);
+        } else if (encoding == 'deflate') {
+          res.pipe(zlib.createInflate()).pipe(outStream).on('finish', ready);
+        } else {
+          res.pipe(outStream).on('finish', ready);
+        }
+      });
+
+      req.on('error', (err) => {
+        reject(err);
+      });
+    };
+
+    // Dummy write stream. Substitute with any other writeable stream
+    const outStream = fs.createWriteStream(opts.outputPath);
+    downloadRequest(options, outStream);
+  });
+}
+
 // Create backend client for extension
 const client = mozaik => {
   mozaik.loadApiConfig(config);
 
+  const publicDir = config.get('slack.publicDir');
   const token = config.get('slack.token');
   const bot = slack.rtm.client();
   const reListen = () => {
@@ -120,18 +182,11 @@ const client = mozaik => {
       bot.message((message) => {
         Promise.all([
           getUser(token, { id: message.user }),
-          getChannel(token, { id: message.channel })
+          getChannel(token, { id: message.channel }),
+          getFile(token, { publicDir: publicDir, file: message.file })
         ])
         .then((output) => {
-          const [user, channel] = output;
-
-          // Remove Slack syntax to make outcome more readable
-          const removeFormat = getFormatRemover({
-            users: users,
-            channels: channels
-          });
-          message.text = removeFormat(message.text || '');
-          message.text = replaceEmojis(message.text);
+          const [user, channel, file] = output;
 
           if (!user || !channel) {
             console.warn('User and/or channel not found. Message from private channel?');
@@ -143,6 +198,15 @@ const client = mozaik => {
             //console.log('Skip', params.channel, 'vs', channel.name, message);
             return;
           }
+
+          // Remove Slack syntax to make outcome more readable
+          const removeFormat = getFormatRemover({
+            users: users,
+            channels: channels
+          });
+          message.text = removeFormat(message.text || '');
+          message.text = replaceEmojis(message.text);
+          message.file = file;
 
           // Replace ids with data
           message.user = user;
