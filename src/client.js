@@ -71,8 +71,11 @@ function getUser(token, opts) {
 function replaceEmojis(text, offset = 0) {
   const match = text.match(/(:((\w|\+|_)+):)+/);
   if (match) {
+    // Increase the search index
     const postIndex = match.index + match[0].length;
-    text = text.substr(offset, postIndex).replace(match[1], emoji.lib[match[2]].char) + replaceEmojis(text.substr(postIndex));
+    // Collect the emoji character if found, default back to :placeholder:
+    const emojiChar = emoji.lib[match[2]] ? emoji.lib[match[2]].char : match[1];
+    text = text.substr(offset, postIndex).replace(match[1], emojiChar) + replaceEmojis(text.substr(postIndex));
   }
   return text;
 }

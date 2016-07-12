@@ -22,4 +22,5 @@ test.cb('slack channel', t => {
 
 test.only('replace emojis', t => {
   t.is(replaceEmojis('testing :smile: :+1:'), `testing ${emoji.lib.smile.char} ${emoji.lib['+1'].char}`);
+  t.is(replaceEmojis('missing :foo:'), 'missing :foo:');
 });
