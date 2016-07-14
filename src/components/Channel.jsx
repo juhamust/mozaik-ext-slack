@@ -49,6 +49,7 @@ class Channel extends Component {
       empty: true,
       title: this.props.title || (this.props.channel ? `Slack ${this.props.channel}` : 'Slack'),
       text: 'Send msg in Slack',
+      style: null,
       avatar: '',
       date: null
     };
@@ -58,13 +59,26 @@ class Channel extends Component {
       const time = message.ts ? moment.unix(message.ts) : new Date();
       content.empty = false;
       content.text = message.text;
+      content.style = {
+        backgroundImage: `url(${message.image})`,
+        backgroundSize: this.props.imageSize,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center'
+      };
       content.author = message.user.real_name;
       content.avatar = message.user.profile.image_48;
       content.date = (<Since time={time}></Since>);
     }
 
     // Construct classes
-    content.class = classNames('slack-channel__message--value', { 'slack-channel__message--empty': content.empty });
+    content.bodyClass = classNames('slack-channel__message', {
+      'slack-channel__message--empty': content.empty,
+      'slack-channel__message--image': message ? message.image : false
+    });
+    content.footerClass = classNames('slack-channel__footer', {
+      'slack-channel__footer--empty': content.empty,
+      'slack-channel__footer--image': message ? message.image : false
+    });
 
     return (<div>
       <div className="widget__header">
@@ -72,10 +86,10 @@ class Channel extends Component {
         <i className="fa fa-comment-o" />
       </div>
       <div className="widget__body">
-        <div className="slack-channel__message">
-          <div className={content.class}>{content.text}</div>
+        <div className={content.bodyClass}>
+          <div style={content.style} className="slack-channel__message--value">{content.text}</div>
         </div>
-        <div className="slack-channel__footer">
+        <div className={content.footerClass}>
           <div className="slack-channel__footer--avatar"><img src={content.avatar} /></div>
           <div className="slack-channel__footer--meta">
             <div className="slack-channel__footer--author">{content.author}</div>
@@ -89,11 +103,13 @@ class Channel extends Component {
 
 Channel.propTypes = {
   title: React.PropTypes.string,
-  channel: React.PropTypes.string
+  channel: React.PropTypes.string,
+  imageSize: React.PropTypes.oneOf(['initial', 'contain', 'cover'])
 };
 
 Channel.defaultProps = {
-  channel: null
+  channel: null,
+  imageSize: 'initial'
 };
 
 // apply the mixins on the component

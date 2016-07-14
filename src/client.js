@@ -12,6 +12,7 @@ import getFormatRemover from 'slack-remove-formatting';
 import config from './config';
 
 const reConnectInterval = 30 * 30 * 1000; // 30mins
+const imageDir = 'images';
 let users = null;
 let channels = null;
 
@@ -69,14 +70,14 @@ function getUser(token, opts) {
     });
 }
 
-function getFile(token, opts = {}) {
+function getImage(token, opts = {}) {
   if (!opts.file) {
     return Promise.resolve();
   }
 
-  const outputPath = path.join(opts.publicDir, `${moment().valueOf()}.${opts.file.filetype}`);
+  const outputPath = path.join(opts.publicDir, imageDir, `${moment().valueOf()}.${opts.file.filetype}`);
   return downloadFile(token, {
-    url: opts.file.url_private_download,
+    url: opts.file.thumb_360 || opts.file.url_private_download,
     outputPath: outputPath
   })
   .then(() => {
@@ -98,6 +99,39 @@ function replaceEmojis(text, offset = 0) {
     text = text.substr(offset, postIndex).replace(match[1], emojiChar) + replaceEmojis(text.substr(postIndex));
   }
   return text;
+}
+
+function deleteFiles(tempDir, maxAge = required()) {
+  const now = moment();
+
+  return new Promise((resolve, reject) => {
+    fs.readdir(tempDir, (err, contents) => {
+      if (err) {
+        return reject(err);
+      }
+
+      return Promise.all(contents.map((entry) => {
+        const entryPath = path.join(tempDir, entry);
+        const stat = fs.statSync(entryPath);
+        const age = parseInt(now.diff(stat.birthtime, 'hours'));
+        if (age > maxAge) {
+          console.log('Delete', entry);
+          return new Promise((res, rej) => {
+            fs.unlink(entryPath, (err) => {
+              if (err) {
+                console.warn(`File ${entryPath} cannot be deleted`);
+                res(err);
+              }
+              res();
+            });
+          });
+        }
+        return Promise.resolve();
+      }))
+      .then(resolve)
+      .catch(reject);
+    });
+  });
 }
 
 function downloadFile(token, opts = {}) {
@@ -147,6 +181,7 @@ const client = mozaik => {
 
   const publicDir = config.get('slack.publicDir');
   const token = config.get('slack.token');
+  const maxImageAge = config.get('slack.maxImageAge');
   const bot = slack.rtm.client();
   const reListen = () => {
     try {
@@ -183,10 +218,10 @@ const client = mozaik => {
         Promise.all([
           getUser(token, { id: message.user }),
           getChannel(token, { id: message.channel }),
-          getFile(token, { publicDir: publicDir, file: message.file })
+          getImage(token, { publicDir: publicDir, file: message.file })
         ])
         .then((output) => {
-          const [user, channel, file] = output;
+          const [user, channel, image] = output;
 
           if (!user || !channel) {
             console.warn('User and/or channel not found. Message from private channel?');
@@ -199,6 +234,9 @@ const client = mozaik => {
             return;
           }
 
+          // Delete old files async (not interested in outcome)
+          deleteFiles(path.join(publicDir, imageDir), maxImageAge);
+
           // Remove Slack syntax to make outcome more readable
           const removeFormat = getFormatRemover({
             users: users,
@@ -206,7 +244,8 @@ const client = mozaik => {
           });
           message.text = removeFormat(message.text || '');
           message.text = replaceEmojis(message.text);
-          message.file = file;
+          message.image = image ? path.relative(publicDir, image) : null;
+          message.text = image ? '' : message.text;
 
           // Replace ids with data
           message.user = user;
@@ -240,6 +279,10 @@ const client = mozaik => {
 
   return apiCalls;
 };
+
+function required() {
+  throw new Error('Missing requirement');
+}
 
 export default client;
 export { replaceEmojis };
