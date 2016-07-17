@@ -24,7 +24,7 @@ const config = convict({
     showImages: {
       doc: 'Download the uploaded images and show them in dashboard',
       default: true,
-      format: 'duration',
+      format: Boolean,
       env: 'SLACK_SHOW_IMAGES'
     },
   }
