@@ -154,19 +154,19 @@ Distributed under the MIT license
 
 ## Changelog
 
-# Release 0.3.0
+### Release 0.3.0
 
 - Added support for showing images
 - Added support for showing emojis
 - Added duration info since previous message
 - Improved message formatting
 
-# Release 0.2.0
+### Release 0.2.0
 
 - Added since time information
 - Fixed issue when having multiple pulse widgets
 - Improved style
 
-# Release 0.1.0
+### Release 0.1.0
 
 - Initial somewhat working version
