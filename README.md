@@ -2,7 +2,7 @@
 
 Module provides some [Slack](https://slack.com) widgets for [Mozaïk dashboard](http://mozaik.rocks/).
 
-![preview-channel](https://raw.githubusercontent.com/juhamust/mozaik-ext-slack/master/preview/channel.png)
+![preview-channel](https://raw.githubusercontent.com/juhamust/mozaik-ext-slack/master/preview/logo.png)
 
 ## Setup
 
@@ -54,10 +54,19 @@ module.exports = {
   // Configure api
   api: {
     slack: {
-      // NOTE: You can also use .env or set value here
-      token: process.env.SLACK_TOKEN
-    },
-    // Other services ...
+      // Slack api token
+      // $SLACK_TOKEN
+      token: 'valuefromslack',
+
+      // NOTE: Following config parameters are OPTIONAL!
+      // Download the uploaded images and show them in dashboard
+      // $SLACK_SHOW_IMAGES
+      showImages: true,
+      // Directory where the static files are hosted from. Needed for images. Defaults to cwd() + './build'
+      publicDir: '/path/to/mozai-demo/build',
+      // The age of temp images to delete
+      // $SLACK_MAX_IMAGE_AGE
+      maxImageAge: '8 hours',
   },
 
   // Set widgets
@@ -98,8 +107,9 @@ Show pulsating circle for each message sent in Slack channel(s)
 
 key           | required | description
 --------------|----------|---------------
-`channel`     | no      | *Name of the channel to follow. Defaults to all public channels where token has permissions to*
 `title`       | no       | *Textual title to show. Example: '#mychannel'.*
+`channel`     | no       | *Name of the channel to follow. Defaults to all public channels where token has permissions to*
+`imageSize`   | no      | Scaling of image: initial, cover, contain. Default to `initial`
 
 ### usage
 
@@ -114,7 +124,7 @@ key           | required | description
 
 ## Widget: slack.pulse
 
-Show pulsating circle for each message sent in Slack channel(s)
+Show pulsating circle from each message sent in Slack channel(s)
 
 ![preview-pulse](https://raw.githubusercontent.com/juhamust/mozaik-ext-slack/master/preview/pulse.png)
 
@@ -141,6 +151,13 @@ key           | required | description
 Distributed under the MIT license
 
 ## Changelog
+
+# Release 0.3.0
+
+- Added support for showing images
+- Added support for showing emojis
+- Added duration info since previous message
+- Improved message formatting
 
 # Release 0.2.0
 

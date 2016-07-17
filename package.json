@@ -1,6 +1,6 @@
 {
   "name": "mozaik-ext-slack",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Slack widgets to Mozaik dashboard",
   "main": "./components.js",
   "scripts": {
@@ -26,12 +26,14 @@
     "d3": "^4.1.0",
     "d3-ease": "^1.0.0",
     "dotenv": "^2.0.0",
+    "emojilib": "^2.0.2",
     "lodash": "^3.10.1",
     "pretty-print": "^1.0.0",
     "react-classset": "0.0.2",
     "react-mixin": "3.0.4",
     "reflux": "0.4.1",
     "slack": "^7.3.0",
+    "slack-remove-formatting": "^0.1.1",
     "superagent": "1.8.3",
     "superagent-bluebird-promise": "3.0.0",
     "validator": "^3.30.0"
