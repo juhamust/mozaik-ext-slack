@@ -235,6 +235,11 @@ const client = mozaik => {
       });
     },
     message(send, params = {}) {
+      if (!_.isFunction(send)) {
+        mozaik.logger.error(chalk.red('mozaik-ext-slack supports only push API'));
+        return Promise.reject();
+      }
+
       // Drop hash sign if set
       if (params.channel) {
         params.channel = params.channel.replace('#', '');
