@@ -103,6 +103,8 @@ Show pulsating circle for each message sent in Slack channel(s)
 
 ![preview-channel](https://raw.githubusercontent.com/juhamust/mozaik-ext-slack/master/preview/channel.png)
 
+![preview-channel](https://raw.githubusercontent.com/juhamust/mozaik-ext-slack/master/preview/image.png)
+
 ### parameters
 
 key           | required | description
