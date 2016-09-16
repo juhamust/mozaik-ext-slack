@@ -154,6 +154,10 @@ Distributed under the MIT license
 
 ## Changelog
 
+### Release 0.3.1
+
+- Improved error cases and logging
+
 ### Release 0.3.0
 
 - Added support for showing images
