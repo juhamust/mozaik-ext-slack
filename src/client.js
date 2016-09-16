@@ -200,7 +200,15 @@ const client = mozaik => {
   const token = config.get('slack.token');
   const maxImageAge = config.get('slack.maxImageAge');
   const showImages = config.get('slack.showImages');
-  const bot = slack.rtm.client();
+  let bot;
+
+  // Validate config
+  if (!token) {
+    mozaik.logger.error(chalk.red('missing config key "slack.token", ignoring client'));
+    return;
+  }
+
+  bot = slack.rtm.client();
 
   const reListen = () => {
     try {
@@ -223,21 +231,10 @@ const client = mozaik => {
 
   // NOTE: API uses push method, no promise response
   const apiCalls = {
-    // For testing purposes
-    test() {
-      return new Promise((resolve, reject) => {
-        slack.auth.test({ token }, (err, resp) => {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(resp);
-        });
-      });
-    },
     message(send, params = {}) {
       if (!_.isFunction(send)) {
         mozaik.logger.error(chalk.red('mozaik-ext-slack supports only push API'));
-        return Promise.reject();
+        return Promise.reject(new Error('Use push API with mozaik-ext-slack'));
       }
 
       // Drop hash sign if set

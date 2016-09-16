@@ -7,6 +7,8 @@ import slackMock from './slack.mock';
 import mozaikMock from './mozaik.mock';
 import emoji from 'emojilib';
 
+process.env.SLACK_TOKEN = 'test';
+
 // Import the tested modules and mock the slack API
 import { replaceEmojis } from '../src/client';
 const client = proxyquire('../src/client', slackMock).default;
