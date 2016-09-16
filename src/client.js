@@ -190,6 +190,16 @@ function dirExists(dir) {
   return exists;
 }
 
+function dirWriteable(dir) {
+  let writeable;
+  try {
+    writeable = fs.statSync(dir).isDirectory();
+  } catch (e) {
+    writeable = false;
+  }
+  return writeable;
+}
+
 // Create backend client for extension
 const client = mozaik => {
   // NOTE: Loaded here to avoid issues with testing
@@ -199,12 +209,12 @@ const client = mozaik => {
   const publicDir = config.get('slack.publicDir');
   const token = config.get('slack.token');
   const maxImageAge = config.get('slack.maxImageAge');
-  const showImages = config.get('slack.showImages');
+  let showImages = config.get('slack.showImages');
   let bot;
 
   // Validate config
   if (!token) {
-    mozaik.logger.error(chalk.red('missing config key "slack.token", ignoring client'));
+    mozaik.logger.error(chalk.red('Missing config key "slack.token", ignoring client'));
     return;
   }
 
@@ -225,8 +235,13 @@ const client = mozaik => {
   // Create missing temp dir if missing
   const tempDir = path.join(publicDir, tempDirName);
   if (showImages && !dirExists(tempDir)) {
-    console.info('Creating temporary folder in public folder:', tempDir);
-    fs.mkdirSync(tempDir);
+    if (dirWriteable(tempDir)) {
+      console.info('Creating temporary folder in public folder:', tempDir);
+      fs.mkdirSync(tempDir);
+    } else {
+      mozaik.logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`));
+      showImages = false;
+    }
   }
 
   // NOTE: API uses push method, no promise response
