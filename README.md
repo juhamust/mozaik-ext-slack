@@ -112,6 +112,7 @@ key           | required | description
 `title`       | no       | *Textual title to show. Example: '#mychannel'.*
 `channel`     | no       | *Name of the channel to follow. Defaults to all public channels where token has permissions to*
 `imageSize`   | no      | Scaling of image: initial, cover, contain. Default to `initial`
+`config`      | no      | Override default pulse config parameters or colors. See source code for details
 
 ### usage
 
@@ -153,6 +154,11 @@ key           | required | description
 Distributed under the MIT license
 
 ## Changelog
+
+### Release 0.4.0
+
+- Added support for pulse configuration
+- Multiple ripples per message
 
 ### Release 0.3.1
 

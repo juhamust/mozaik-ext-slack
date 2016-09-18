@@ -4,34 +4,28 @@ import { ListenerMixin } from 'reflux';
 import Mozaik from 'mozaik/browser';
 var d3 = require('d3');
 var ease = require('d3-ease');
-//import _ from 'lodash';
+import _ from 'lodash';
 
-// Slack colours
-const colors = [
-  { r: 112, g: 204, b: 220 }, // blue
-  { r: 223, g: 168, b: 35 }, // orange
-  { r: 225, g: 22, b: 101 }, // red
-  { r: 61, g: 186, b: 145 } // green
-];
 
 function pulse(opts) {
-  const color = colors[opts.colorIndex || 0];
-
-  d3.select(opts.element)
-    .append('circle')
-    .attr('cx', 100)
-    .attr('cy', 100)
-    .attr('r', 30)
-    .attr('stroke-width', 20)
-    .attr('fill', 'transparent')
-    .attr('stroke', `rgba(${color.r}, ${color.g}, ${color.b}, 255)`)
-    .transition()
-    .duration(15000)
-    .ease(ease.easeExp)
-    .attr('stroke-width', 2)
-    .attr('stroke', `rgba(${color.r}, ${color.g}, ${color.b}, 0)`)
-    .attr('r', 100)
-    .remove();
+  for (var i = 1; i < opts.count; ++i) {
+    d3.select(opts.element)
+      .append('circle')
+      .attr('cx', opts.position.x)
+      .attr('cy', opts.position.y)
+      .attr('r', 30)
+      .attr('stroke-width', opts.strokeWidth / (i))
+      .attr('fill', 'transparent')
+      .attr('stroke', `rgba(${opts.color.r}, ${opts.color.g}, ${opts.color.b}, 255)`)
+      .transition()
+        .delay(Math.pow(i, 2.5) * opts.delay)
+        .duration(opts.duration)
+        .ease(ease.easeQuadIn)
+      .attr('stroke-width', 2)
+      .attr('stroke', `rgba(${opts.color.r}, ${opts.color.g}, ${opts.color.b}, 0)`)
+      .attr('r', opts.radius)
+      .remove();
+  }
 }
 
 class Pulse extends Component {
@@ -39,6 +33,29 @@ class Pulse extends Component {
     super(props);
     this.mounted = false;
     this.state = { colorIndex: 0 };
+    this.config = _.defaultsDeep(this.props.config || {}, {
+      delay: 10,
+      count: 8,
+      radius: 300,
+      duration: 4000,
+      strokeWidth: 20,
+      // Defaults to Slack colours
+      colors: [
+        { r: 112, g: 204, b: 220 }, // blue
+        { r: 223, g: 168, b: 35 }, // orange
+        { r: 225, g: 22, b: 101 }, // red
+        { r: 61, g: 186, b: 145 } // green
+      ],
+      positions: [
+        { x: 50, y: 50 },
+        { x: 100, y: 50 },
+        { x: 150, y: 50 },
+        { x: 100, y: 100 },
+        { x: 50, y: 100 },
+        { x: 100, y: 150 },
+        { x: 150, y: 150 },
+      ]
+    });
   }
 
   getApiRequest() {
@@ -52,18 +69,28 @@ class Pulse extends Component {
   }
 
   onApiData(data) {
-    const nextIndex = this.state.colorIndex < 3 ? this.state.colorIndex + 1 : 0;
+    const nextColorIndex = this.state.colorIndex < (this.config.colors.length - 1) ? this.state.colorIndex + 1 : 0;
+    const nextPositionIndex = this.state.positionIndex < (this.config.colors.length - 1) ? this.state.positionIndex + 1 : 0;
+
     this.setState({
-      colorIndex: nextIndex
+      colorIndex: nextColorIndex,
+      positionIndex: nextPositionIndex,
     });
 
     // NOTE: Modifying DOM with D3 is not ideal, consider
     // using https://github.com/Olical/react-faux-dom later on
     if (this.mounted) {
-      pulse({
+      console.log('Pulse', _.extend({
         element: this._svg.getDOMNode(),
-        colorIndex: nextIndex
-      });
+        color: this.config.colors[this.state.colorIndex || 0],
+        position: this.config.positions[this.state.positionIndex || 0]
+      }, this.config));
+
+      pulse(_.extend({
+        element: this._svg.getDOMNode(),
+        color: this.config.colors[this.state.colorIndex || 0],
+        position: this.config.positions[this.state.positionIndex || 0]
+      }, this.config));
     }
   }
 
@@ -85,7 +112,7 @@ class Pulse extends Component {
           <i className="fa fa-comment-o" />
         </div>
         <div className="slack__pulse--body widget__body">
-          <svg ref={(c) => this._svg = c} height="200" width="200"></svg>
+          <svg ref={(c) => this._svg = c} height="400" width="400"></svg>
         </div>
       </div>
     );
@@ -94,7 +121,8 @@ class Pulse extends Component {
 
 Pulse.propTypes = {
   title: React.PropTypes.string,
-  channel: React.PropTypes.string
+  channel: React.PropTypes.string,
+  config: React.PropTypes.object
 };
 
 Pulse.defaultProps = {
