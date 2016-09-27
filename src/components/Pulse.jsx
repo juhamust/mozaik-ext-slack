@@ -28,15 +28,22 @@ function pulse(opts) {
   }
 }
 
+function getRandom(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 class Pulse extends Component {
   constructor(props) {
     super(props);
     this.mounted = false;
-    this.state = { colorIndex: 0 };
+    this.state = {
+      colorIndex: 0,
+      height: 400,
+      width: 400
+    };
     this.config = _.defaultsDeep(this.props.config || {}, {
       delay: 10,
       count: 8,
-      radius: 300,
       duration: 4000,
       strokeWidth: 20,
       // Defaults to Slack colours
@@ -45,15 +52,6 @@ class Pulse extends Component {
         { r: 223, g: 168, b: 35 }, // orange
         { r: 225, g: 22, b: 101 }, // red
         { r: 61, g: 186, b: 145 } // green
-      ],
-      positions: [
-        { x: 50, y: 50 },
-        { x: 100, y: 50 },
-        { x: 150, y: 50 },
-        { x: 100, y: 100 },
-        { x: 50, y: 100 },
-        { x: 100, y: 150 },
-        { x: 150, y: 150 },
       ]
     });
   }
@@ -77,21 +75,30 @@ class Pulse extends Component {
       positionIndex: nextPositionIndex,
     });
 
+    if (!this.mounted) {
+      return;
+    }
+
+    // Get area size
+    const bodyElement = this._body.getDOMNode();
+    this.setState({
+      height: bodyElement.clientHeight,
+      width: bodyElement.clientWidth
+    });
+
     // NOTE: Modifying DOM with D3 is not ideal, consider
     // using https://github.com/Olical/react-faux-dom later on
-    if (this.mounted) {
-      console.log('Pulse', _.extend({
-        element: this._svg.getDOMNode(),
-        color: this.config.colors[this.state.colorIndex || 0],
-        position: this.config.positions[this.state.positionIndex || 0]
-      }, this.config));
-
-      pulse(_.extend({
-        element: this._svg.getDOMNode(),
-        color: this.config.colors[this.state.colorIndex || 0],
-        position: this.config.positions[this.state.positionIndex || 0]
-      }, this.config));
-    }
+    pulse(_.extend({
+      height: this.state.height,
+      width: this.state.width,
+      radius: _.max([this.state.height, this.state.width]) + 100,
+      element: this._svg.getDOMNode(),
+      color: this.config.colors[this.state.colorIndex || 0],
+      position: {
+        x: getRandom(0, this.state.width),
+        y: getRandom(0, this.state.height)
+      }
+    }, this.config));
   }
 
   componentDidMount() {
@@ -107,12 +114,12 @@ class Pulse extends Component {
 
     return (
       <div className="slack__pulse">
-        <div className="widget__header">
+        <div className="widget__header slack__pulse--header">
           <span className="widget__header__subject">{title}</span>
           <i className="fa fa-comment-o" />
         </div>
-        <div className="slack__pulse--body widget__body">
-          <svg ref={(c) => this._svg = c} height="400" width="400"></svg>
+        <div className="slack__pulse--body widget__body" ref={(c) => this._body = c}>
+          <svg ref={(c) => this._svg = c} height={this.state.height} width={this.state.width}></svg>
         </div>
       </div>
     );

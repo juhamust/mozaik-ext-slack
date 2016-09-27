@@ -9,6 +9,7 @@ import slack from 'slack';
 import emoji from 'emojilib';
 import moment from 'moment';
 import getFormatRemover from 'slack-remove-formatting';
+import EchoClient from './echo.client';
 
 const reConnectInterval = 30 * 30 * 1000; // 30mins
 const tempDirName = 'images';
@@ -218,6 +219,7 @@ const client = mozaik => {
     return;
   }
 
+  //bot = EchoClient();
   bot = slack.rtm.client();
 
   const reListen = () => {
@@ -258,6 +260,8 @@ const client = mozaik => {
       }
 
       bot.message((message) => {
+        mozaik.logger.info(message);
+
         Promise.all([
           getUser(token, { id: message.user }),
           getChannel(token, { id: message.channel }),
