@@ -209,8 +209,9 @@ const client = mozaik => {
     return;
   }
 
-  //bot = EchoClient();
-  bot = slack.rtm.client();
+  // Use echo message if set (mostly for dev/demo purposes)
+  const echoMessage = config.get('slack.echoMessage');
+  bot = !_.isEmpty(echoMessage) ? EchoClient(echoMessage) : slack.rtm.client();
 
   const reListen = () => {
     try {

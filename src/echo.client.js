@@ -1,7 +1,14 @@
 class EchoClient {
 
-  constructor() {
-
+  constructor(echoMessage) {
+    this.echoMessage = echoMessage || {
+      type: 'message',
+      channel: 'C02GVP9DZ',
+      user: 'U02558FA2',
+      text: 'Hello from Slack!',
+      ts: '1475003567.000006',
+      team: 'T0254ARL8'
+    }
   }
 
   close() {
@@ -16,7 +23,7 @@ class EchoClient {
     }
     setInterval(() => {
       if(getRandom(0, 100) < 40 && this.cb) {
-        this.onMessage();
+        this.onMessage(this.echoMessage);
       }
     }, 1500);
   }
@@ -26,16 +33,9 @@ class EchoClient {
     this.cb = cb;
   }
 
-  onMessage() {
-    console.log('message!');
-    this.cb({
-      type: 'message',
-      channel: 'C02GVP9DZ',
-      user: 'U02558FA2',
-      text: 'foobar',
-      ts: '1475003567.000006',
-      team: 'T0254ARL8'
-    });
+  onMessage(msg) {
+    console.log('Echo a message');
+    this.cb(msg);
   }
 
 }
@@ -44,7 +44,6 @@ function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-//
-export default () => {
-  return new EchoClient();
+export default (msg) => {
+  return new EchoClient(msg);
 };

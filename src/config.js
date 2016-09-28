@@ -27,6 +27,11 @@ const config = convict({
       format: Boolean,
       env: 'SLACK_SHOW_IMAGES'
     },
+    echoMessage: {
+      doc: 'Slack message to simulate',
+      default: {},
+      format: Object
+    }
   }
 });
 
