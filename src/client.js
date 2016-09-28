@@ -191,16 +191,6 @@ function dirExists(dir) {
   return exists;
 }
 
-function dirWriteable(dir) {
-  let writeable;
-  try {
-    writeable = fs.statSync(dir).isDirectory();
-  } catch (e) {
-    writeable = false;
-  }
-  return writeable;
-}
-
 // Create backend client for extension
 const client = mozaik => {
   // NOTE: Loaded here to avoid issues with testing
@@ -237,11 +227,10 @@ const client = mozaik => {
   // Create missing temp dir if missing
   const tempDir = path.join(publicDir, tempDirName);
   if (showImages && !dirExists(tempDir)) {
-    if (dirWriteable(tempDir)) {
-      console.info('Creating temporary folder in public folder:', tempDir);
+    try {
       fs.mkdirSync(tempDir);
-    } else {
-      mozaik.logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`));
+    } catch (e) {
+      mozaik.logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`), e);
       showImages = false;
     }
   }

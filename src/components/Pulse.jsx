@@ -110,7 +110,7 @@ class Pulse extends Component {
   }
 
   render() {
-    const title = this.props.title || 'Pulse';
+    const title = this.props.title;
 
     return (
       <div className="slack__pulse">
@@ -133,6 +133,7 @@ Pulse.propTypes = {
 };
 
 Pulse.defaultProps = {
+  title: 'Slack',
   channel: null
 };
 
