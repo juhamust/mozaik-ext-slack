@@ -11,12 +11,21 @@ class Channel extends Component {
     super(props);
     this.mounted = false;
     this.state = {
-      message: null
+      message: null,
+      width: 100,
+      height: 100
     };
   }
 
   componentDidMount() {
     this.mounted = true;
+
+    // Get area size
+    const bodyElement = this._body.getDOMNode();
+    this.setState({
+      height: bodyElement.clientHeight,
+      width: bodyElement.clientWidth
+    });
   }
 
   componentWillUnmount() {
@@ -43,13 +52,19 @@ class Channel extends Component {
     console.log('State changed', this.state);
   }
 
+  getFontSize(width, height, textLength = 1) {
+    const textLengthFactor = 2.1;
+    let size = Math.ceil(Math.sqrt((width * height / (textLength * textLengthFactor))));
+    return size;
+  }
+
   render() {
     const { message } = this.state;
     let content = {
       empty: true,
       title: this.props.title || (this.props.channel ? `Slack ${this.props.channel}` : 'Slack'),
       text: 'Send msg in Slack',
-      style: null,
+      style: {},
       avatar: '',
       date: null
     };
@@ -70,6 +85,10 @@ class Channel extends Component {
       content.date = (<Since time={time}></Since>);
     }
 
+    const fontSize = this.getFontSize(this.state.width, this.state.height, content.text.length);
+    content.style.fontSize = fontSize;
+    content.style.lineHeight = `${fontSize + 2}px`;
+
     // Construct classes
     content.bodyClass = classNames('slack-channel__message', {
       'slack-channel__message--empty': content.empty,
@@ -85,7 +104,7 @@ class Channel extends Component {
         <span className="widget__header__subject">{content.title}</span>
         <i className="fa fa-comment-o" />
       </div>
-      <div className="widget__body">
+      <div className="widget__body" ref={(c) => this._body = c}>
         <div className={content.bodyClass}>
           <div style={content.style} className="slack-channel__message--value">{content.text}</div>
         </div>
