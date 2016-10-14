@@ -1,14 +1,7 @@
 class EchoClient {
 
   constructor(echoMessage) {
-    this.echoMessage = echoMessage || {
-      type: 'message',
-      channel: 'C02GVP9DZ',
-      user: 'U02558FA2',
-      text: 'Hello from Slack!',
-      ts: '1475003567.000006',
-      team: 'T0254ARL8'
-    }
+    this.echoMessage = echoMessage;
   }
 
   close() {
