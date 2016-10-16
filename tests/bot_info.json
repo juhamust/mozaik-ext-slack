@@ -1,0 +1,10 @@
+{
+  "bot": {
+    "id": "B028FCZ4U",
+    "deleted": false,
+    "name": "Matti Nykänen",
+    "icons": {
+      "image_48": "https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2014-04-10/2286762903_48.png"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "mozaik-ext-slack",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Slack widgets to Mozaik dashboard",
   "main": "./components.js",
   "scripts": {
@@ -44,7 +44,6 @@
     "babel-register": "6.7.2",
     "eslint": "^2.13.0",
     "eslint-plugin-react": "^5.2.2",
-    "gulp": "^3.8.11",
     "jsdom": "^9.2.1",
     "proxyquire": "^1.7.9",
     "touch": "0.0.3"

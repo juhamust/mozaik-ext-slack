@@ -38,7 +38,7 @@
 
 .slack-channel__footer--meta
   float left
-  margin 1vmin 0
+  margin 0
   box-sizing border-box
 
 .slack-channel__footer--author
@@ -50,8 +50,18 @@
   float none
   margin-left 1.6vmin
   font-size 1.6vmin
+  position relative
+  bottom 1vmin
+
+.slack__pulse
+  height 100%
+  width 100%
+
+.slack__pulse--header
+  z-index 3000
 
 .slack__pulse--body
   top 0
-  text-align center
-  position relative
+  overflow hidden
+  height 100%
+  width 100%

@@ -9,6 +9,7 @@ import slack from 'slack';
 import emoji from 'emojilib';
 import moment from 'moment';
 import getFormatRemover from 'slack-remove-formatting';
+import EchoClient from './echo.client';
 
 const reConnectInterval = 30 * 30 * 1000; // 30mins
 const tempDirName = 'images';
@@ -45,6 +46,20 @@ function getUsers(token) {
       }
       users = response.members;
       return resolve(users);
+    });
+  });
+}
+
+function getBotInfo(token, opts) {
+  console.log(`Get bot info: ${opts.botId}`);
+  return new Promise((resolve, reject) => {
+    // Return cached data if available
+    // Fetch channels data from Slack
+    slack.bots.info({ token, bot: opts.botId }, (err, response) => {
+      if (err) {
+        return reject(err || new Error(`Failed retrieving bot info with id: ${opts.botId}`));
+      }
+      return resolve(response.bot);
     });
   });
 }
@@ -190,16 +205,6 @@ function dirExists(dir) {
   return exists;
 }
 
-function dirWriteable(dir) {
-  let writeable;
-  try {
-    writeable = fs.statSync(dir).isDirectory();
-  } catch (e) {
-    writeable = false;
-  }
-  return writeable;
-}
-
 // Create backend client for extension
 const client = mozaik => {
   // NOTE: Loaded here to avoid issues with testing
@@ -218,7 +223,16 @@ const client = mozaik => {
     return;
   }
 
-  bot = slack.rtm.client();
+  // Use echo message if set (mostly for dev/demo purposes)
+  const echoMessage = config.get('slack.echoMessage');
+  if (echoMessage && !_.isEmpty(echoMessage)) {
+    mozaik.logger.warn(chalk.yellow('Emulating Slack messages for demo purposes'), typeof echoMessage, echoMessage);
+    bot = EchoClient(echoMessage);
+  }
+  else {
+    mozaik.logger.info('Registering Slack client');
+    bot = slack.rtm.client();
+  }
 
   const reListen = () => {
     try {
@@ -235,11 +249,10 @@ const client = mozaik => {
   // Create missing temp dir if missing
   const tempDir = path.join(publicDir, tempDirName);
   if (showImages && !dirExists(tempDir)) {
-    if (dirWriteable(tempDir)) {
-      console.info('Creating temporary folder in public folder:', tempDir);
+    try {
       fs.mkdirSync(tempDir);
-    } else {
-      mozaik.logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`));
+    } catch (e) {
+      mozaik.logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`), e);
       showImages = false;
     }
   }
@@ -258,8 +271,34 @@ const client = mozaik => {
       }
 
       bot.message((message) => {
+        //mozaik.logger.info(message);
+
+        // Harmonize the user and bot data by loading them into userInfo
+        let userPromise = null;
+        let userInfo = {
+          name: null,
+          profileImage: null
+        };
+        if (message.user) {
+          userPromise = getUser(token, { id: message.user })
+          .then((user) => {
+            userInfo.name = user.profile.real_name || user.real_name || user.name;
+            userInfo.profileImage = user.profile.image_48;
+            return userInfo;
+          });
+        }
+        else if (message.bot_id) {
+          userPromise = getBotInfo(token, { botId: message.bot_id })
+          .then((bot) => {
+            userInfo.name = bot.name;
+            userInfo.profileImage = bot.icons.image_48;
+            return userInfo;
+          });
+        }
+
+        // Load user, channel and image
         Promise.all([
-          getUser(token, { id: message.user }),
+          userPromise,
           getChannel(token, { id: message.channel }),
           getImage(token, {
             publicDir: publicDir,

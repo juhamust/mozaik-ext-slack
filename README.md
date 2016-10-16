@@ -155,6 +155,13 @@ Distributed under the MIT license
 
 ## Changelog
 
+### Release 0.5.0
+
+- Adjust font size automatically: Based on given size and length of text
+- Improved ripple to have random location and more configurable outcome
+- Fixed #7: Show bot messages
+- Created `echoMessage` for testing purpsoses
+
 ### Release 0.4.0
 
 - Added support for pulse configuration
