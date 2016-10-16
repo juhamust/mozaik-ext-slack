@@ -80,8 +80,8 @@ class Channel extends Component {
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center'
       };
-      content.author = message.user.real_name;
-      content.avatar = message.user.profile.image_48;
+      content.author = message.user.name;
+      content.avatar = message.user.profileImage;
       content.date = (<Since time={time}></Since>);
     }
 

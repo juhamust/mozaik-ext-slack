@@ -50,6 +50,20 @@ function getUsers(token) {
   });
 }
 
+function getBotInfo(token, opts) {
+  console.log(`Get bot info: ${opts.botId}`);
+  return new Promise((resolve, reject) => {
+    // Return cached data if available
+    // Fetch channels data from Slack
+    slack.bots.info({ token, bot: opts.botId }, (err, response) => {
+      if (err) {
+        return reject(err || new Error(`Failed retrieving bot info with id: ${opts.botId}`));
+      }
+      return resolve(response.bot);
+    });
+  });
+}
+
 // Get cached list of users
 function getChannel(token, opts) {
   //console.log('Fetching channel:', opts);
@@ -257,10 +271,34 @@ const client = mozaik => {
       }
 
       bot.message((message) => {
-        mozaik.logger.info(message);
+        //mozaik.logger.info(message);
 
+        // Harmonize the user and bot data by loading them into userInfo
+        let userPromise = null;
+        let userInfo = {
+          name: null,
+          profileImage: null
+        };
+        if (message.user) {
+          userPromise = getUser(token, { id: message.user })
+          .then((user) => {
+            userInfo.name = user.profile.real_name || user.real_name || user.name;
+            userInfo.profileImage = user.profile.image_48;
+            return userInfo;
+          });
+        }
+        else if (message.bot_id) {
+          userPromise = getBotInfo(token, { botId: message.bot_id })
+          .then((bot) => {
+            userInfo.name = bot.name;
+            userInfo.profileImage = bot.icons.image_48;
+            return userInfo;
+          });
+        }
+
+        // Load user, channel and image
         Promise.all([
-          getUser(token, { id: message.user }),
+          userPromise,
           getChannel(token, { id: message.channel }),
           getImage(token, {
             publicDir: publicDir,
