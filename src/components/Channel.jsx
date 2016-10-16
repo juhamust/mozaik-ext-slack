@@ -5,6 +5,7 @@ import Mozaik from 'mozaik/browser';
 import classNames from 'classnames';
 import moment from 'moment';
 import Since from './Since.jsx';
+import Impulse from './Impulse.jsx';
 
 class Channel extends Component {
   constructor(props) {
@@ -49,7 +50,6 @@ class Channel extends Component {
     }
 
     this.setState({ message: message });
-    console.log('State changed', this.state);
   }
 
   getFontSize(width, height, textLength = 1) {
@@ -99,6 +99,8 @@ class Channel extends Component {
       'slack-channel__footer--image': message ? message.image : false
     });
 
+    const pulse = this.props.showPulse ? <Impulse className="slack-channel__impulse" message={content.text}></Impulse> : null;
+
     return (<div>
       <div className="widget__header">
         <span className="widget__header__subject">{content.title}</span>
@@ -108,6 +110,7 @@ class Channel extends Component {
         <div className={content.bodyClass}>
           <div style={content.style} className="slack-channel__message--value">{content.text}</div>
         </div>
+        {pulse}
         <div className={content.footerClass}>
           <div className="slack-channel__footer--avatar"><img src={content.avatar} /></div>
           <div className="slack-channel__footer--meta">
@@ -124,12 +127,14 @@ Channel.propTypes = {
   title: React.PropTypes.string,
   channel: React.PropTypes.string,
   showImages: React.PropTypes.bool,
+  showPulse: React.PropTypes.bool,
   imageSize: React.PropTypes.oneOf(['initial', 'contain', 'cover'])
 };
 
 Channel.defaultProps = {
   channel: null,
   showImages: true,
+  showPulse: false,
   imageSize: 'initial',
 };
 
