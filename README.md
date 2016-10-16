@@ -78,6 +78,7 @@ module.exports = {
       {
         type: 'slack.channel',
         channel: 'general',
+        showPulse: true,
         columns: 1, rows: 1,
         x: 0, y: 0
       },
@@ -112,6 +113,8 @@ key           | required | description
 `title`       | no       | *Textual title to show. Example: '#mychannel'.*
 `channel`     | no       | *Name of the channel to follow. Defaults to all public channels where token has permissions to*
 `imageSize`   | no      | Scaling of image: initial, cover, contain. Default to `initial`
+`showImages`  | no      | Show images or not. Defaults to `true`
+`showPulse`   | no      | Show pulse visualisation on each message or not. Defaults to `false`
 `config`      | no      | Override default pulse config parameters or colors. See source code for details
 
 ### usage
@@ -154,6 +157,10 @@ key           | required | description
 Distributed under the MIT license
 
 ## Changelog
+
+### Release 0.6.0
+
+- Add support to show pulse within channel widget
 
 ### Release 0.5.0
 
