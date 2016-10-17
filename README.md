@@ -161,7 +161,7 @@ Distributed under the MIT license
 
 ### Release 0.7.1
 
-- Fixed the layout issues in
+- Show pulse only on new API data
 
 ### Release 0.7.0
 
