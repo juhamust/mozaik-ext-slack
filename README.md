@@ -159,6 +159,10 @@ Distributed under the MIT license
 
 ## Changelog
 
+### Release 0.7.1
+
+- Fixed the layout issues in
+
 ### Release 0.7.0
 
 - Add support for keywords: Show only messages matching with the rule

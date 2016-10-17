@@ -8,6 +8,9 @@ import _ from 'lodash';
 import Since from './Since.jsx';
 import Impulse from './Impulse.jsx';
 
+
+const MIN_FONT_SIZE = 10;
+
 class Channel extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +40,7 @@ class Channel extends Component {
 
   getApiRequest() {
     const requestId = this.props.channel ? `slack.message.${this.props.channel}` : 'slack.message';
+
     return {
       id: requestId,
       params: {
@@ -61,16 +65,25 @@ class Channel extends Component {
         return;
       }
       // Remove keyword
-      message.text = message.text.replace(this.matcher.exec(message.text)[0], '');
+      message.text = message.text.replace(this.matcher.exec(message.text)[0], '').trim();
     }
 
-    this.setState({ message: message });
+    this.renderPulse = true;
+    this.setState({
+      message: message
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Set internal flag once the rendering is done
+    // so that we don't draw pulse on every render (for example when switching widgets)
+    this.renderPulse = false;
   }
 
   getFontSize(width, height, textLength = 1) {
     const textLengthFactor = 2.1;
     let size = Math.ceil(Math.sqrt((width * height / (textLength * textLengthFactor))));
-    return size;
+    return size > MIN_FONT_SIZE ? size : MIN_FONT_SIZE;
   }
 
   render() {
@@ -114,7 +127,7 @@ class Channel extends Component {
       'slack-channel__footer--image': message ? message.image : false
     });
 
-    const pulse = this.props.showPulse ? <Impulse className="slack-channel__impulse" message={content.text}></Impulse> : null;
+    const pulse = (this.props.showPulse && this.renderPulse) ? <Impulse className="slack-channel__impulse" message={content.text}></Impulse> : null;
 
     return (<div>
       <div className="widget__header">
