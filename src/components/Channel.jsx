@@ -4,6 +4,7 @@ import { ListenerMixin } from 'reflux';
 import Mozaik from 'mozaik/browser';
 import classNames from 'classnames';
 import moment from 'moment';
+import _ from 'lodash';
 import Since from './Since.jsx';
 import Impulse from './Impulse.jsx';
 
@@ -11,6 +12,7 @@ class Channel extends Component {
   constructor(props) {
     super(props);
     this.mounted = false;
+    this.matcher = this.props.keyword ? new RegExp(this.props.keyword, 'i') : null;
     this.state = {
       message: null,
       width: 100,
@@ -44,9 +46,22 @@ class Channel extends Component {
   }
 
   onApiData(message) {
+    // Clone the message since same object can be provided to others
+    message = _.cloneDeep(message);
+
     if (!this.mounted) {
       console.warn('Component is not yet/more mounted. Skipping.');
       return;
+    }
+
+    if (this.props.keyword && this.matcher) {
+      // Skip if no match
+      if (!this.matcher.test(message.text)) {
+        console.warn('Message does not match with provided keyword:', this.props.keyword);
+        return;
+      }
+      // Remove keyword
+      message.text = message.text.replace(this.matcher.exec(message.text)[0], '');
     }
 
     this.setState({ message: message });
@@ -128,6 +143,7 @@ Channel.propTypes = {
   channel: React.PropTypes.string,
   showImages: React.PropTypes.bool,
   showPulse: React.PropTypes.bool,
+  keyword: React.PropTypes.string,
   imageSize: React.PropTypes.oneOf(['initial', 'contain', 'cover'])
 };
 
@@ -135,6 +151,7 @@ Channel.defaultProps = {
   channel: null,
   showImages: true,
   showPulse: false,
+  keyword: null,
   imageSize: 'initial',
 };
 

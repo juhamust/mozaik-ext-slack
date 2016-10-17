@@ -112,10 +112,11 @@ key           | required | description
 --------------|----------|---------------
 `title`       | no       | *Textual title to show. Example: '#mychannel'.*
 `channel`     | no       | *Name of the channel to follow. Defaults to all public channels where token has permissions to*
-`imageSize`   | no      | Scaling of image: initial, cover, contain. Default to `initial`
-`showImages`  | no      | Show images or not. Defaults to `true`
-`showPulse`   | no      | Show pulse visualisation on each message or not. Defaults to `false`
-`config`      | no      | Override default pulse config parameters or colors. See source code for details
+`imageSize`   | no       | Scaling of image: initial, cover, contain. Default to `initial`
+`showImages`  | no       | Show images or not. Defaults to `true`
+`showPulse`   | no       | Show pulse visualisation on each message or not. Defaults to `false`
+`keyword`     | no       | Show only message containing the defined keyword. Supports regexp like `^foo`. For file upload, the match is done against initial comment or title
+`config`      | no       | Override default pulse config parameters or colors. See source code for details
 
 ### usage
 
@@ -157,6 +158,10 @@ key           | required | description
 Distributed under the MIT license
 
 ## Changelog
+
+### Release 0.7.0
+
+- Add support for keywords: Show only messages matching with the rule
 
 ### Release 0.6.0
 

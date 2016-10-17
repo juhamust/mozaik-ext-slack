@@ -331,7 +331,7 @@ const client = mozaik => {
           message.text = removeFormat(message.text || '');
           message.text = replaceEmojis(message.text);
           message.image = image ? path.relative(publicDir, image) : null;
-          message.text = image ? '' : message.text;
+          message.text = image ? _.get(message, 'file.initial_comment.comment', null) || message.file.title : message.text;
 
           // Replace ids with data
           message.user = user;
