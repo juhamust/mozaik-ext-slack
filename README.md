@@ -159,6 +159,10 @@ Distributed under the MIT license
 
 ## Changelog
 
+### Release 0.7.2
+
+- Updated documentation
+
 ### Release 0.7.1
 
 - Show pulse only on new API data
