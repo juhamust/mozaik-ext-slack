@@ -159,6 +159,10 @@ Distributed under the MIT license
 
 ## Changelog
 
+### Release 0.8.0
+
+- Added support for restoring latest message from browser storage
+
 ### Release 0.7.2
 
 - Updated documentation

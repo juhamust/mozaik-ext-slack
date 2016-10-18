@@ -11,13 +11,28 @@ import Impulse from './Impulse.jsx';
 
 const MIN_FONT_SIZE = 10;
 
+function getStoreValue(key) {
+  if (typeof(Storage) === 'undefined') {
+    return;
+  }
+  return JSON.parse(localStorage.getItem(key));
+}
+
+function setStoreValue(key, value) {
+  if (typeof(Storage) === 'undefined') {
+    return;
+  }
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
 class Channel extends Component {
   constructor(props) {
     super(props);
     this.mounted = false;
     this.matcher = this.props.keyword ? new RegExp(this.props.keyword, 'i') : null;
+    this.requestId = `slack.message.${this.props.channel || 'nochannel'}.${this.props.keyword || 'nokeyword'}`;
     this.state = {
-      message: null,
+      message: getStoreValue(this.requestId),
       width: 100,
       height: 100
     };
@@ -39,10 +54,10 @@ class Channel extends Component {
   }
 
   getApiRequest() {
-    const requestId = this.props.channel ? `slack.message.${this.props.channel}` : 'slack.message';
+
 
     return {
-      id: requestId,
+      id: this.requestId,
       params: {
         channel: this.props.channel
       }
@@ -67,6 +82,9 @@ class Channel extends Component {
       // Remove keyword
       message.text = message.text.replace(this.matcher.exec(message.text)[0], '').trim();
     }
+
+    // Store
+    setStoreValue(this.requestId, message);
 
     this.renderPulse = true;
     this.setState({
