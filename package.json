@@ -32,6 +32,7 @@
     "dotenv": "^2.0.0",
     "emojilib": "^2.0.2",
     "lodash": "^3.10.1",
+    "micromatch": "^3.1.5",
     "pretty-print": "^1.0.0",
     "react-classset": "0.0.2",
     "react-mixin": "3.0.4",
