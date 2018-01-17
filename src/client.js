@@ -8,6 +8,7 @@ import _ from 'lodash';
 import slack from 'slack';
 import emoji from 'emojilib';
 import moment from 'moment';
+import mm from 'micromatch';
 import getFormatRemover from 'slack-remove-formatting';
 import EchoClient from './echo.client';
 
@@ -15,6 +16,15 @@ const reConnectInterval = 30 * 30 * 1000; // 30mins
 const tempDirName = 'images';
 let users = null;
 let channels = null;
+
+// Check if provided channel name matches with micromatch
+// rules (separated with comma) and returns true if match
+function matchChannel(channelName, filterString) {
+  return mm.all(
+    channelName.replace('#', ''),
+    filterString.split(',').map(filter => filter.trim())
+  );
+}
 
 function getChannels(token) {
   return new Promise((resolve, reject) => {
@@ -314,9 +324,9 @@ const client = mozaik => {
             return;
           }
 
-          // Filter with params
-          if (params.channel && params.channel !== channel.name) {
-            //console.log('Skip', params.channel, 'vs', channel.name, message);
+          // Filter with params by using micromatch module
+          // See options in documentation: https://www.npmjs.com/package/micromatch
+          if (params.channel && !matchChannel(channel.name, params.channel)) {
             return;
           }
 
@@ -371,4 +381,4 @@ function required() {
 }
 
 export default client;
-export { replaceEmojis };
+export { replaceEmojis, matchChannel };

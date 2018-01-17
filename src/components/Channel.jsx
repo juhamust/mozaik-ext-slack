@@ -5,6 +5,7 @@ import Mozaik from 'mozaik/browser';
 import classNames from 'classnames';
 import moment from 'moment';
 import _ from 'lodash';
+import hash from 'hash.js';
 import Since from './Since.jsx';
 import Impulse from './Impulse.jsx';
 
@@ -28,9 +29,10 @@ function setStoreValue(key, value) {
 class Channel extends Component {
   constructor(props) {
     super(props);
+    const identifier = hash.sha256().update(`${props.channel || ''}${props.keyword || ''}`).digest('hex');
     this.mounted = false;
     this.matcher = this.props.keyword ? new RegExp(this.props.keyword, 'i') : null;
-    this.requestId = `slack.message.${this.props.channel || 'nochannel'}.${this.props.keyword || 'nokeyword'}`;
+    this.requestId = `slack.message.${identifier}`;
     this.state = {
       message: getStoreValue(this.requestId),
       width: 100,

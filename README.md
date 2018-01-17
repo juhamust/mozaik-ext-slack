@@ -111,7 +111,7 @@ Show pulsating circle for each message sent in Slack channel(s)
 key           | required | description
 --------------|----------|---------------
 `title`       | no       | *Textual title to show. Example: '#mychannel'.*
-`channel`     | no       | *Name of the channel to follow. Defaults to all public channels where token has permissions to*
+`channel`     | no       | *Channels to follow, separated with comma. Defaults to all the channels the token has permission to. Supports including/excluding rules by [micromatch](https://github.com/micromatch/micromatch). Leading hash character ignored*
 `imageSize`   | no       | Scaling of image: initial, cover, contain. Default to `initial`
 `showImages`  | no       | Show images or not. Defaults to `true`
 `showPulse`   | no       | Show pulse visualisation on each message or not. Defaults to `false`
@@ -123,7 +123,7 @@ key           | required | description
 ```javascript
 {
   type: 'slack.pulse',
-  channel: 'general',
+  channel: 'general,!sales',
   columns: 2, rows: 1,
   x: 1, y: 0
 }
@@ -139,7 +139,7 @@ Show pulsating circle from each message sent in Slack channel(s)
 
 key           | required | description
 --------------|----------|---------------
-`channel`     | no      | *Name of the channel to follow. Defaults to all public channels where token has permissions to*
+`channel`     | no      | *Channels to follow, separated with comma. Defaults to all the channels the token has permission to. Supports including/excluding rules by [micromatch](https://github.com/micromatch/micromatch). Leading hash character ignored*
 `title`       | no       | *Textual title to show. Example: '#mychannel'.*
 
 ### usage
@@ -147,7 +147,7 @@ key           | required | description
 ```javascript
 {
   type: 'slack.pulse',
-  channel: 'general',
+  channel: '*',
   columns: 2, rows: 1,
   x: 1, y: 0
 }
@@ -158,6 +158,11 @@ key           | required | description
 Distributed under the MIT license
 
 ## Changelog
+
+### Release 0.9.0
+
+- Added support for including/excluding channel messages by using advanced globbing channel name rules like: `general, !sales, team-*` (general -channel and all the channels starging with "team-". Explicitly no sales)
+- Improved internal identifier
 
 ### Release 0.8.0
 
