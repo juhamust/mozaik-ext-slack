@@ -1,17 +1,25 @@
-import React, { Component } from 'react';
-import reactMixin from 'react-mixin';
-import { ListenerMixin } from 'reflux';
-import Mozaik from 'mozaik/browser';
-var d3 = require('d3');
-var ease = require('d3-ease');
-import _ from 'lodash';
+import {
+  React,
+  Component
+} from 'react';
+
+import reactMixin    from 'react-mixin';
+import ListenerMixin from 'reflux';
+import Mozaik        from 'mozaik/browser';
+
 import Impulse from './Impulse.jsx';
 
+var d3   = require('d3');
+var ease = require('d3-ease');
+
+import _ from 'lodash';
 
 class Pulse extends Component {
   constructor(props) {
     super(props);
+
     this.mounted = false;
+
     this.state = {
       message: null
     };
@@ -19,6 +27,7 @@ class Pulse extends Component {
 
   getApiRequest() {
     const requestId = this.props.channel ? `slack.message.${this.props.channel}` : 'slack.message';
+
     return {
       id: requestId,
       params: {
@@ -49,13 +58,13 @@ class Pulse extends Component {
 }
 
 Pulse.propTypes = {
-  title: React.PropTypes.string,
+  title:   React.PropTypes.string,
   channel: React.PropTypes.string,
 };
 
 Pulse.defaultProps = {
-  title: 'Slack',
-  channel: null
+  title:   'Slack',
+  channel:  null
 };
 
 // apply the mixins on the component

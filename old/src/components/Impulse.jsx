@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
+
 import reactMixin from 'react-mixin';
+
 import { ListenerMixin } from 'reflux';
+
 import Mozaik from 'mozaik/browser';
+
 var d3 = require('d3');
 var ease = require('d3-ease');
+
 import _ from 'lodash';
 
-
 function pulse(opts) {
+
   for (var i = 1; i < opts.count; ++i) {
     d3.select(opts.element)
       .append('circle')
@@ -35,12 +40,15 @@ function getRandom(min, max) {
 class Impulse extends Component {
   constructor(props) {
     super(props);
+
     this.mounted = false;
+
     this.state = {
       colorIndex: 0,
       height: 400,
       width: 400
     };
+
     this.config = _.defaultsDeep(this.props.config || {}, {
       delay: 10,
       count: 8,
@@ -61,10 +69,11 @@ class Impulse extends Component {
 
     // Get area size
     const bodyElement = this._body.getDOMNode();
+
     this.setState({
       element: this._svg.getDOMNode(),
-      height: bodyElement.clientHeight,
-      width: bodyElement.clientWidth
+      height:  bodyElement.clientHeight,
+      width:   bodyElement.clientWidth
     });
   }
 
@@ -85,11 +94,11 @@ class Impulse extends Component {
     // NOTE: Modifying DOM with D3 is not ideal, consider
     // using https://github.com/Olical/react-faux-dom later on
     pulse(_.extend({
-      height: this.state.height,
-      width: this.state.width,
-      radius: _.max([this.state.height, this.state.width]) + 100,
+      height:  this.state.height,
+      width:   this.state.width,
+      radius:  _.max([this.state.height, this.state.width]) + 100,
       element: this.state.element,
-      color: this.config.colors[this.state.colorIndex || 0],
+      color:   this.config.colors[this.state.colorIndex || 0],
       position: {
         x: getRandom(0, this.state.width),
         y: getRandom(0, this.state.height)
@@ -105,16 +114,15 @@ class Impulse extends Component {
 }
 
 Impulse.propTypes = {
-  title: React.PropTypes.string,
+  title:   React.PropTypes.string,
   channel: React.PropTypes.string,
-  config: React.PropTypes.object,
+  config:  React.PropTypes.object,
   message: React.PropTypes.string
 };
 
 Impulse.defaultProps = {
-  title: 'Slack',
+  title:  'Slack',
   channel: null
 };
-
 
 export default Impulse;

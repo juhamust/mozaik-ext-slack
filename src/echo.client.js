@@ -37,6 +37,6 @@ function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export default (msg) => {
+exports.default =  (msg) => {
   return new EchoClient(msg);
 };

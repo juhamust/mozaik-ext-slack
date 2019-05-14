@@ -1,6 +1,5 @@
-const convict = require('convict');
-
-var path = require('path');
+import path    from 'path';
+import convict from 'convict';
 
 const config = convict({
   slack: {
@@ -14,7 +13,7 @@ const config = convict({
       doc:     'The Slack API token.',
       default: '',
       format:  String,
-      env:     'SLACK_TOKEN'
+      env: '   SLACK_TOKEN'
     },
     maxImageAge: {
       doc:     'The age of an image in hours to delete',
@@ -28,25 +27,18 @@ const config = convict({
       format:  Boolean,
       env:     'SLACK_SHOW_IMAGES'
     },
+
     // For testing/development
     // NOTE: Use JSON in .env
-    // Example:
-    //   SLACK_ECHO_MESSAGE = {
-    //     "type":    "message",
-    //     "channel": "C02GVP9DZ",
-    //     "user":    "U02558FA2",
-    //     "text":    "Hello from Slack!",
-    //     "ts":      "1475003567.000006",
-    //     "team":    "T0254ARL8"
-    //   }
+    // Example: SLACK_ECHO_MESSAGE = { "type": "message", "channel": "C02GVP9DZ", "user": "U02558FA2", "text": "Hello from Slack!", "ts": "1475003567.000006", "team": "T0254ARL8" }
 
     echoMessage: {
-      doc:     'Slack message to simulate',
-      default: {},
-      format:  Object,
-      env:     'SLACK_ECHO_MESSAGE'
+      doc: 'Slack message to simulate',
+      default: { },
+      format: Object,
+      env: 'SLACK_ECHO_MESSAGE'
     }
   }
 });
 
-exports.default = config;
+export default config;

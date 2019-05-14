@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
-import reactMixin from 'react-mixin';
-import { ListenerMixin } from 'reflux';
-import Mozaik from 'mozaik/browser';
-import classNames from 'classnames';
-import moment from 'moment';
-import _ from 'lodash';
-import hash from 'hash.js';
-import Since from './Since.jsx';
-import Impulse from './Impulse.jsx';
 
+import _    from 'lodash';
+import hash from 'hash.js';
+
+import reactMixin from 'react-mixin';
+import Mozaik     from 'mozaik/browser';
+import classNames from 'classnames';
+import moment     from 'moment';
+
+import { ListenerMixin } from 'reflux';
+
+import Since   from './Since.jsx';
+import Impulse from './Impulse.jsx';
 
 const MIN_FONT_SIZE = 10;
 
@@ -16,6 +19,7 @@ function getStoreValue(key) {
   if (typeof(Storage) === 'undefined') {
     return;
   }
+
   return JSON.parse(localStorage.getItem(key));
 }
 
@@ -23,16 +27,20 @@ function setStoreValue(key, value) {
   if (typeof(Storage) === 'undefined') {
     return;
   }
+
   localStorage.setItem(key, JSON.stringify(value));
 }
 
 class Channel extends Component {
   constructor(props) {
     super(props);
+
     const identifier = hash.sha256().update(`${props.channel || ''}${props.keyword || ''}`).digest('hex');
+
     this.mounted = false;
     this.matcher = this.props.keyword ? new RegExp(this.props.keyword, 'i') : null;
     this.requestId = `slack.message.${identifier}`;
+
     this.state = {
       message: getStoreValue(this.requestId),
       width: 100,
@@ -45,6 +53,7 @@ class Channel extends Component {
 
     // Get area size
     const bodyElement = this._body.getDOMNode();
+
     this.setState({
       height: bodyElement.clientHeight,
       width: bodyElement.clientWidth
@@ -56,8 +65,6 @@ class Channel extends Component {
   }
 
   getApiRequest() {
-
-
     return {
       id: this.requestId,
       params: {
@@ -67,6 +74,7 @@ class Channel extends Component {
   }
 
   onApiData(message) {
+
     // Clone the message since same object can be provided to others
     message = _.cloneDeep(message);
 
@@ -76,11 +84,13 @@ class Channel extends Component {
     }
 
     if (this.props.keyword && this.matcher) {
+
       // Skip if no match
       if (!this.matcher.test(message.text)) {
         console.warn('Message does not match with provided keyword:', this.props.keyword);
         return;
       }
+
       // Remove keyword
       message.text = message.text.replace(this.matcher.exec(message.text)[0], '').trim();
     }
@@ -89,12 +99,14 @@ class Channel extends Component {
     setStoreValue(this.requestId, message);
 
     this.renderPulse = true;
+
     this.setState({
       message: message
     });
   }
 
   componentDidUpdate(prevProps, prevState) {
+
     // Set internal flag once the rendering is done
     // so that we don't draw pulse on every render (for example when switching widgets)
     this.renderPulse = false;
@@ -102,39 +114,45 @@ class Channel extends Component {
 
   getFontSize(width, height, textLength = 1) {
     const textLengthFactor = 2.1;
+
     let size = Math.ceil(Math.sqrt((width * height / (textLength * textLengthFactor))));
+
     return size > MIN_FONT_SIZE ? size : MIN_FONT_SIZE;
   }
 
   render() {
     const { message } = this.state;
+
     let content = {
-      empty: true,
-      title: this.props.title || (this.props.channel ? `Slack ${this.props.channel}` : 'Slack'),
-      text: 'Send msg in Slack',
-      style: {},
+      empty:  true,
+      title:  this.props.title || (this.props.channel ? `Slack ${this.props.channel}` : 'Slack'),
+      text:   'Send msg in Slack',
+      style:  { },
       avatar: '',
-      date: null
+      date:   null
     };
 
     // Override actual content
     if (message) {
       const time = message.ts ? moment.unix(message.ts) : new Date();
+
       content.empty = false;
-      content.text = message.text;
+      content.text  = message.text;
+
       content.style = {
-        backgroundImage: `url(${message.image})`,
-        backgroundSize: this.props.imageSize,
-        backgroundRepeat: 'no-repeat',
+        backgroundImage:    `url(${message.image})`,
+        backgroundSize:     this.props.imageSize,
+        backgroundRepeat:   'no-repeat',
         backgroundPosition: 'center'
       };
       content.author = message.user.name;
       content.avatar = message.user.profileImage;
-      content.date = (<Since time={time}></Since>);
+      content.date   = (<Since time={time}></Since>);
     }
 
     const fontSize = this.getFontSize(this.state.width, this.state.height, content.text.length);
-    content.style.fontSize = fontSize;
+
+    content.style.fontSize   = fontSize;
     content.style.lineHeight = `${fontSize + 2}px`;
 
     // Construct classes
@@ -172,19 +190,19 @@ class Channel extends Component {
 }
 
 Channel.propTypes = {
-  title: React.PropTypes.string,
-  channel: React.PropTypes.string,
+  title:      React.PropTypes.string,
+  channel:    React.PropTypes.string,
   showImages: React.PropTypes.bool,
-  showPulse: React.PropTypes.bool,
-  keyword: React.PropTypes.string,
-  imageSize: React.PropTypes.oneOf(['initial', 'contain', 'cover'])
+  showPulse:  React.PropTypes.bool,
+  keyword:    React.PropTypes.string,
+  imageSize:  React.PropTypes.oneOf(['initial', 'contain', 'cover'])
 };
 
 Channel.defaultProps = {
-  channel: null,
+  channel:    null,
   showImages: true,
-  showPulse: false,
-  keyword: null,
+  showPulse:  false,
+  keyword:    null,
   imageSize: 'initial',
 };
 

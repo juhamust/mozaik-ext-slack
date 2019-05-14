@@ -1,12 +1,18 @@
-import React, { Component } from 'react';
+import {
+  React, Component
+} from 'react';
+
 import classNames from 'classnames';
+
 import moment from 'moment';
 
 class Since extends Component {
   constructor(props) {
     super(props);
+
     this.mounted = false;
     this.intervalId;
+
     this.state = {
       humanizedDuration: this.getDuration().humanize(true)
     };
@@ -16,6 +22,7 @@ class Since extends Component {
     if (!this.props.time.diff) {
       this.props.time = moment(this.props.time);
     }
+
     const diff = this.props.time.diff(moment());
     return moment.duration(diff);
   }
@@ -34,6 +41,7 @@ class Since extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
+
     clearInterval(this.intervalId);
   }
 
