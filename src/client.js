@@ -11,41 +11,47 @@ var moment                = require('moment'                 );
 var mm                    = require('micromatch'             );
 var getFormatRemover      = require('slack-remove-formatting');
 
-var EchoClient = require('./echo.client').EchoClient;
+import EchoClient from './echo.client';
 
 const reConnectInterval = 30 * 30 * 1000; // 30mins
 const tempDirName       = 'images';
 
 let users    = null;
 let channels = null;
+let logger = null;
 
 // Check if provided channel name matches with micromatch
 // rules (separated with comma) and returns true if match
 function matchChannel(channelName, filterString) {
-  return mm.all(
+  logger.info(chalk.green("matchChannel"));
+  return mm(
     channelName.replace('#', ''),
     filterString.split(',').map(filter => filter.trim())
   );
 }
 
 function getChannels(token) {
+  logger.info(chalk.green("getChannels"));
   return new Promise((resolve, reject) => {
     // Return cached data if available
     if (channels) {
       return resolve(channels);
     }
+
     // Fetch channels data from Slack
     slack.channels.list({ token }, (err, response) => {
       if (err) {
         return reject(err || 'Failed retrieving channels');
       }
       channels = response.channels;
+
       return resolve(channels);
     });
   });
 }
 
 function getUsers(token) {
+  logger.info(chalk.green("getUsers()"));
   return new Promise((resolve, reject) => {
     // Return cached data if available
     if (users) {
@@ -64,7 +70,7 @@ function getUsers(token) {
 
 function getBotInfo(token, opts) {
 
-  console.log(`Get bot info: ${opts.botId}`);
+  logger.info(chalk.green(`Get bot info: ${opts.botId}`));
 
   return new Promise((resolve, reject) => {
     // Return cached data if available
@@ -81,10 +87,10 @@ function getBotInfo(token, opts) {
 
 // Get cached list of users
 function getChannel(token, opts) {
-  //console.log('Fetching channel:', opts);
+  logger.info(chalk.green(`getChannel(${token}, ${JSON.stringify(opts, null, 2)}`));
+  logger.info(chalk.green('Fetching channel:', opts));
   return getChannels()
     .then((channels) => {
-
       // NOTE: Matches with Slack response. Example: { id: 'T01233' } or { name: 'bar' }
       return _.find(channels, opts);
     });
@@ -92,7 +98,7 @@ function getChannel(token, opts) {
 
 // Get cached list of users
 function getUser(token, opts) {
-  //console.log('Fetching user:', opts);
+  logger.info(chalk.green('Fetching user:'), opts);
   return getUsers()
     .then((users) => {
 
@@ -102,6 +108,7 @@ function getUser(token, opts) {
 }
 
 function getImage(token, opts = {}) {
+  logger.info(chalk.green("getImage"));
   if (!opts.file || !opts.showImages) {
     return Promise.resolve();
   }
@@ -117,7 +124,7 @@ function getImage(token, opts = {}) {
     outputPath: outputPath
   })
     .then(() => {
-      console.log(`Downloaded file ${opts.file.title}`);
+      logger.info(chalk.green(`Downloaded file ${opts.file.title}`));
       return Promise.resolve(outputPath);
     });
 }
@@ -163,7 +170,7 @@ function deleteFiles(tempDir, maxAge = required()) {
 
           if (age > maxAge) {
 
-            console.log('Delete', entry);
+            logger.info(chalk.green('Delete'), entry);
 
             return new Promise((res, rej) => {
               fs.unlink(entryPath, (err) => {
@@ -243,6 +250,9 @@ function dirExists(dir) {
 
 // Create backend client for extension
 module.exports =  mozaik => {
+  logger = mozaik.logger;
+  logger.info(chalk.green("Testing logger"));
+  logger.info(chalk.green("Loading mozaik-ext-slack config"));
   // NOTE: Loaded here to avoid issues with testing
   const config = require('./config').default;
 
@@ -267,24 +277,28 @@ module.exports =  mozaik => {
   if (echoMessage && !_.isEmpty(echoMessage)) {
     mozaik.logger.warn(chalk.yellow('Emulating Slack messages for demo purposes'), typeof echoMessage, echoMessage);
 
-    bot = EchoClient(echoMessage);
+    bot = new EchoClient(echoMessage);
   }
   else {
-    mozaik.logger.info('Registering Slack client');
+    mozaik.logger.info(chalk.green('Registering Slack client'));
 
-    bot = slack.rtm.client();
+    bot = slack.rtm.client(token)
+
+
   }
 
   const reListen = () => {
+    logger.info("reListen()");
     try {
       bot.close();
     } catch (e) {
       // Closing failed (or not opened yet)
     } finally {
+      console.log('Bot is listening');
       bot.listen({ token });
     }
 
-    mozaik.logger.info('Started listening Slack events');
+    mozaik.logger.info(chalk.green('Started listening Slack events'));
 
     return bot;
   };
@@ -303,7 +317,12 @@ module.exports =  mozaik => {
 
   // NOTE: API uses push method, no promise response
   const apiCalls = {
+
+
     message(send, params = {}) {
+
+      logger.info("Inside 'message' call");
+
       if (!_.isFunction(send)) {
         mozaik.logger.error(chalk.red('mozaik-ext-slack supports only push API'));
 
@@ -316,7 +335,8 @@ module.exports =  mozaik => {
       }
 
       bot.message((message) => {
-        //mozaik.logger.info(message);
+        logger.info("message from slack bot");
+        mozaik.logger.info(message);
 
         // Harmonize the user and bot data by loading them into userInfo
         let userPromise = null;
@@ -366,18 +386,19 @@ module.exports =  mozaik => {
             // Filter with params by using micromatch module
             // See options in documentation: https://www.npmjs.com/package/micromatch
             if (params.channel && !matchChannel(channel.name, params.channel)) {
+
               return;
             }
 
             // Delete old files async (not interested in outcome)
-            deleteFiles(path.join(publicDir, tempDirName), maxImageAge);
+            // deleteFiles(path.join(publicDir, tempDirName), maxImageAge);
 
             // Remove Slack syntax to make outcome more readable
-            const removeFormat = getFormatRemover({
-              users:    users,
-              channels: channels
-            });
-            message.text  = removeFormat(message.text || '');
+            // const removeFormat = getFormatRemover({
+            //   users:    users,
+            //   channels: channels
+            // });
+            //message.text  = removeFormat(message.text || '');
             message.text  = replaceEmojis(message.text);
             message.image = image ? path.relative(publicDir, image) : null;
             message.text  = image ? _.get(message, 'file.initial_comment.comment', null) || message.file.title : message.text;
@@ -385,7 +406,7 @@ module.exports =  mozaik => {
             // Replace ids with data
             message.user    = user;
             message.channel = channel;
-            //console.log('Syncing Slack message:', message);
+            logger.info('Syncing Slack message:', message);
             send(message);
           })
           .catch((err) => {
@@ -398,12 +419,14 @@ module.exports =  mozaik => {
   // Initiate by caching some data
   getChannels(token)
     .then((channels) => {
-      mozaik.logger.info(chalk.green('Loaded slack', channels.length, 'channels'));
+      mozaik.logger.info(chalk.green('Loaded slack', channels.length, 'channels:'));
 
+      channels.forEach(channel=> mozaik.logger.info(chalk.green(`\t${channel.name}`)));
       return getUsers(token);
     })
     .then((users) => {
-      mozaik.logger.info(chalk.green('Loaded', users.length, 'slack users'));
+      mozaik.logger.info(chalk.green('Loaded', users.length, 'slack users:'));
+      users.forEach(user=>mozaik.logger.info(chalk.green(`\t${user.name}`)));
       setInterval(reListen, reConnectInterval);
       reListen();
     })

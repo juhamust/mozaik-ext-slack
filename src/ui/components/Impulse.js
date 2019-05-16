@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
 import reactMixin from 'react-mixin';
 
 import { ListenerMixin } from 'reflux';
 
-import Mozaik from 'mozaik/browser';
+
+import PropTypes from 'prop-types';
+
+import Mozaik from '@mozaik/ui';
 
 var d3 = require('d3');
 var ease = require('d3-ease');
@@ -12,7 +16,7 @@ var ease = require('d3-ease');
 import _ from 'lodash';
 
 function pulse(opts) {
-
+  console.log(`Impulse: pulse(${opts}})`);
   for (var i = 1; i < opts.count; ++i) {
     d3.select(opts.element)
       .append('circle')
@@ -37,8 +41,9 @@ function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-class Impulse extends Component {
+export default class Impulse extends Component {
   constructor(props) {
+    console.log('Impulse: constructor()');
     super(props);
 
     this.mounted = false;
@@ -65,13 +70,14 @@ class Impulse extends Component {
   }
 
   componentDidMount() {
+    console.log('Impulse: componentDidMount()');
     this.mounted = true;
 
     // Get area size
-    const bodyElement = this._body.getDOMNode();
+    const bodyElement = ReactDOM.findDOMNode(this._body);
 
     this.setState({
-      element: this._svg.getDOMNode(),
+      element: ReactDOM.findDOMNode(this._svg),
       height:  bodyElement.clientHeight,
       width:   bodyElement.clientWidth
     });
@@ -114,10 +120,10 @@ class Impulse extends Component {
 }
 
 Impulse.propTypes = {
-  title:   React.PropTypes.string,
-  channel: React.PropTypes.string,
-  config:  React.PropTypes.object,
-  message: React.PropTypes.string
+  title:   PropTypes.string,
+  channel: PropTypes.string,
+  config:  PropTypes.object,
+  message: PropTypes.string
 };
 
 Impulse.defaultProps = {
@@ -125,4 +131,3 @@ Impulse.defaultProps = {
   channel: null
 };
 
-export default Impulse;

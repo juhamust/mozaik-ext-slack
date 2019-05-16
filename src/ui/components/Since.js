@@ -1,13 +1,13 @@
-import {
-  React, Component
-} from 'react';
+import React, { Component } from 'react'
 
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import moment from 'moment';
 
 class Since extends Component {
   constructor(props) {
+    console.log('Since: constructor()');
     super(props);
 
     this.mounted = false;
@@ -19,6 +19,7 @@ class Since extends Component {
   }
 
   getDuration() {
+    console.log('Since: getDuration()');
     if (!this.props.time.diff) {
       this.props.time = moment(this.props.time);
     }
@@ -53,10 +54,10 @@ class Since extends Component {
 }
 
 Since.propTypes = {
-  time: React.PropTypes.oneOfType([
-    React.PropTypes.string,
-    React.PropTypes.number,
-    React.PropTypes.instanceOf(Date)
+  time: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.instanceOf(Date)
   ])
 };
 Since.defaultProps = {

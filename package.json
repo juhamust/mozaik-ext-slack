@@ -1,6 +1,6 @@
 {
   "name": "mozaik-ext-slack",
-  "version": "0.9.1",
+  "version": "0.9.3",
   "description": "Slack widgets to Mozaik dashboard",
   "author": "Juha Mustonen",
   "license": "MIT",
@@ -30,7 +30,9 @@
     "node-fetch": "^1.7.3",
     "prop-types": "^15.5.10",
     "react-icons": "^2.2.5",
+    "react-mixin": "^5.0.0",
     "react-test-renderer": "^15.5.0",
+    "reflux": "^6.4.1",
     "request": "^2.79.0",
     "request-promise-native": "^1.0.3",
     "sha.js": "^2.4.10",
@@ -41,9 +43,9 @@
     "vivus": "^0.4.3",
     "whatwg-fetch": "^2.0.3"
   },
-  "main": "./lib/components/index.js",
-  "module": "es/components/index.js",
-  "jsnext:main": "es/components/index.js",
+  "main": "./lib/index.js",
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
   "devDependencies": {
     "@babel/preset-es2017": "^7.0.0-beta.53",
     "@mozaik/ui": "^2.0.0-alpha.11",
@@ -67,15 +69,16 @@
     "nock": "^9.0.2",
     "nyc": "^10.0.0",
     "prettier": "^1.5.3",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.7.0",
+    "react-dom": "^16.8.6",
     "styled-components": "^3.0.2",
     "watch": "^1.0.2"
   },
   "peerDependencies": {
     "@mozaik/ui": "^2.0.0-alpha.11",
     "nivo": "^1.0.0-alpha.8",
-    "react": "^15.6.1"
+    "react": "^16.7.0",
+    "mozaik": ">=1.4.2"
   },
   "scripts": {
     "lint": "eslint ./src/** ./test/**",
@@ -88,7 +91,6 @@
     "build": "npm run build:commonjs && npm run build:es",
     "fmt": "prettier --print-width=100 --tab-width=2 --bracket-spacing --no-semi --trailing-comma es5 --single-quote --color --write \"{src,test}/**/*.js\" 'client.js'",
     "fmt:check": "prettier --print-width=100 --tab-width=2 --bracket-spacing --no-semi --trailing-comma es5 --single-quote --list-different \"{src,test}/**/*.js\" 'client.js'",
-    "prepublishOnly": "npm run lint && npm test && npm run build",
     "version": "echo ${npm_package_version}",
     "watch": "watch 'npm run build' src"
   },
@@ -104,6 +106,11 @@
     "setupTestFrameworkScriptFile": "<rootDir>/tests/setupTests.js",
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
+    ]
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
     ]
   }
 }
