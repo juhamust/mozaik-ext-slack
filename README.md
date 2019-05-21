@@ -16,28 +16,33 @@ Follow the steps to install and configure widget into dashboard
   npm install -S mozaik-ext-slack
   ```
 
-- Register client api by adding to dashboard `src/server.js`:
+- Register client api by adding to `src/register_apis.js`:
 
   ```javascript
-  // NOTE: Widget uses push method to delivery messages!
-  import slack from 'mozaik-ext-slack/client';
-  mozaik.bus.registerApi('slack', slack, 'push');
+    // NOTE: Widget uses push method to delivery messages!
+    module.exports = (Mozaik, configFile, config) => {
+        Mozaik.registerApi('slack', require('mozaik-ext-slack/client'), 'push');
+    };
   ```
 
-- Register widgets by adding to dashboard ``src/App.jsx``:
+- Register widgets by adding to ``src/register_extensions.js``:
 
   ```javascript
   import slack from 'mozaik-ext-slack';
-  mozaik.addBatch('slack', slack);
+
+  Registry.addExtensions({
+      slack
+  });
+
   ```
 
 - Build the dashboard:
 
   ```shell
-  npm run build-assets
+  npm run build
   ```
 
-### Slack
+### Slack API Configuration
 
 - Generate/collect the Slack token: https://api.slack.com/docs/oauth-test-tokens
 - Place token in dashboard `.env` file:
@@ -45,57 +50,55 @@ Follow the steps to install and configure widget into dashboard
 SLACK_TOKEN=value-provided-by-slack
 ```
 
+Set additional API configuration settings as desired (also in `.env`):
+
+```ini
+SLACK_SHOW_IMAGES=true
+SLACK_PUBLIC_DIR="assets/"
+SLACK_MAX_IMAGE_AGE="8 hours"
+```
+
+
 ### Widgets
 
-Set api and widget configuration values in dashboard `config.js`. See followup sections for details.
+Set widget configuration values in `conf/config.yml`. See followup sections for details.
 
-```javascript
-module.exports = {
-  // Configure api
-  api: {
-    slack: {
-      // Slack api token
-      // $SLACK_TOKEN
-      token: 'valuefromslack',
+```yaml
 
-      // NOTE: Following config parameters are OPTIONAL!
-      // Download the uploaded images and show them in dashboard
-      // $SLACK_SHOW_IMAGES
-      showImages: true,
-      // Directory where the static files are hosted from. Needed for images. Defaults to cwd() + './build'
-      publicDir: '/path/to/mozai-demo/build',
-      // The age of temp images to delete
-      // $SLACK_MAX_IMAGE_AGE
-      maxImageAge: '8 hours',
-  },
+user: 0.0.0.0
+port: 5000
 
-  // Set widgets
-  dashboards: [
-    columns: 2,
-    rows: 2,
-    // See next sections for details
-    widgets: [
-      {
-        type: 'slack.channel',
-        channel: 'general',
+# define duraton between each dashboard rotation (ms)
+rotationDuration: 30
+# define the interval used by Mozaïk Bus to call registered APIs
+apisPollInterval: 10000000
+dashboards:
+  -
+    columns: 2
+    rows:    2
+    title:   Slack Test
+    widgets:
+      - extension: slack
+        widget:    Channel
+        channel:   general
         showPulse: true,
-        columns: 1, rows: 1,
-        x: 0, y: 0
-      },
-      {
-        type: 'slack.pulse',
-        columns: 1, rows: 1,
-        x: 1, y: 0
-      },
-    ]
-  ]
-}
+        columns:   1 
+        rows:      1
+        x:         0
+        y:         0
+      - extension: slack
+        widget:    Pulse
+        channel:   general
+        columns:   1
+        rows:      1
+        x:         1
+        y:         0
 ```
 
 Finally, start the dashboard with command:
 
 ```shell
-node app.js
+node server.js conf/config.yml
 ```
 
 ## Widget: slack.channel
@@ -120,13 +123,14 @@ key           | required | description
 
 ### usage
 
-```javascript
-{
-  type: 'slack.pulse',
-  channel: 'general,!sales',
-  columns: 2, rows: 1,
-  x: 1, y: 0
-}
+```yaml
+- extension: slack
+  widget:    Pulse
+  channel:   'general,!sales
+  columns:   1, 
+  rows:      1
+  x:         1, 
+  y:         0
 ```
 
 ## Widget: slack.pulse
@@ -144,13 +148,14 @@ key           | required | description
 
 ### usage
 
-```javascript
-{
-  type: 'slack.pulse',
-  channel: '*',
-  columns: 2, rows: 1,
-  x: 1, y: 0
-}
+```yaml
+- extension: slack
+  widget:    Pulse
+  channel:   '*',
+  columns:   2
+  rows:      1
+  x:         1
+  y:         0
 ```
 
 ## License
