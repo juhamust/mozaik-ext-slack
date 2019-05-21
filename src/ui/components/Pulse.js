@@ -4,6 +4,7 @@ import reactMixin    from 'react-mixin';
 import ListenerMixin from 'reflux';
 import Mozaik from '@mozaik/ui';
 
+import {Slack} from 'react-feather';
 
 import {
   Widget,
@@ -56,8 +57,7 @@ export default class Pulse extends Component {
 
     return (
       <Widget>
-        <WidgetHeader title={title}>
-          <i className="fa fa-comment-o" />
+        <WidgetHeader title={title} icon={Slack}>
         </WidgetHeader>
         <WidgetBody>
           <Impulse message={this.state.message}></Impulse>

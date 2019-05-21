@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import Since   from './Since.js';
 import Impulse from './Impulse.js';
 
+import {Slack} from 'react-feather';
 
 import {
   Widget,
@@ -290,8 +291,8 @@ class Channel extends Component {
     };
 
     return (<Widget>
-      <WidgetHeader title = {content.title}>
-        <i className="fa fa-comment-o" />
+      <WidgetHeader title = {`Channel: ${this.props.channel}`} icon={Slack}>
+
       </WidgetHeader>
       <WidgetBody ref={(c) => this._body = c}>
         <div style={bodyStyle}>
