@@ -24,6 +24,7 @@ let logger = null;
 // rules (separated with comma) and returns true if match
 function matchChannel(channelName, filterString) {
   logger.info(chalk.green("matchChannel"));
+
   let result = mm(
     channelName.replace('#', ''),
     filterString.split(',').map(filter => filter.trim())
@@ -34,6 +35,7 @@ function matchChannel(channelName, filterString) {
 
 function getChannels(token) {
   logger.info(chalk.green("getChannels"));
+
   return new Promise((resolve, reject) => {
     // Return cached data if available
     if (channels) {
@@ -135,18 +137,29 @@ function getImage(token, opts = {}) {
  * Replace multiple emojis from text like "hello there! :smile: :smirk:"
  */
 function replaceEmojis(text, offset = 0) {
+  console.log("ReplaceEmojis()");
 
   const match = text.match(/(:((\w|\+|_)+):)+/);
 
+  console.log(`match = ${match}`);
+
   if (match) {
+    console.log(`Found an emoji: ${match}`);
+
     // Increase the search index
     const postIndex = match.index + match[0].length;
 
     // Collect the emoji character if found, default back to :placeholder:
     const emojiChar = emoji.lib[match[2]] ? emoji.lib[match[2]].char : match[1];
 
+    console.log(`Emojichar: ${emojiChar}`);
+
     text = text.substr(offset, postIndex).replace(match[1], emojiChar) + replaceEmojis(text.substr(postIndex));
+  } else {
+    console.log(`${match} did not contain an emoji`);
   }
+
+  console.log(`returning ${text}`);
   return text;
 }
 
@@ -196,7 +209,7 @@ function downloadFile(token, opts = {}) {
   const options = {
     url: opts.url,
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'Authorization':   `Bearer ${token}`,
       'accept-encoding': 'gzip,deflate'
     }};
 
@@ -206,7 +219,7 @@ function downloadFile(token, opts = {}) {
       const req = request(options);
 
       const ready = () =>  {
-        resolve({});
+        resolve({ });
       };
 
       req.on('response', function (res) {
@@ -253,8 +266,10 @@ function dirExists(dir) {
 // Create backend client for extension
 module.exports =  mozaik => {
   logger = mozaik.logger;
+
   logger.info(chalk.green("Testing logger"));
   logger.info(chalk.green("Loading mozaik-ext-slack config"));
+
   // NOTE: Loaded here to avoid issues with testing
   const config = require('./config').default;
 
@@ -285,8 +300,6 @@ module.exports =  mozaik => {
     mozaik.logger.info(chalk.green('Registering Slack client'));
 
     bot = slack.rtm.client(token)
-
-
   }
 
   const reListen = () => {
@@ -319,12 +332,12 @@ module.exports =  mozaik => {
 
   // NOTE: API uses push method, no promise response
   const apiCalls = {
-
-
     message(send, params = {}) {
 
+      console.log(`send = ${JSON.stringify(send, null, 2)}`);
 
       logger.info("Inside 'message' call");
+      logger.info(`send = ${JSON.stringify(send)}`);
       logger.info(`params = ${JSON.stringify(params)}`);
 
       if (!_.isFunction(send)) {
@@ -388,6 +401,7 @@ module.exports =  mozaik => {
             }
 
             console.log("Trying to filter");
+
             // Filter with params by using micromatch module
             // See options in documentation: https://www.npmjs.com/package/micromatch
             if (params.channel && !matchChannel(channel.name, params.channel)) {
@@ -396,6 +410,7 @@ module.exports =  mozaik => {
             }
 
             console.log("Passed filter");
+
             // Delete old files async (not interested in outcome)
             // deleteFiles(path.join(publicDir, tempDirName), maxImageAge);
 
@@ -405,6 +420,7 @@ module.exports =  mozaik => {
             //   channels: channels
             // });
             //message.text  = removeFormat(message.text || '');
+
             message.text  = replaceEmojis(message.text);
             message.image = image ? path.relative(publicDir, image) : null;
             message.text  = image ? _.get(message, 'file.initial_comment.comment', null) || message.file.title : message.text;
@@ -412,6 +428,7 @@ module.exports =  mozaik => {
             // Replace ids with data
             message.user    = user;
             message.channel = channel;
+
             logger.info('Syncing Slack message:', message);
             send(message);
           })
@@ -428,10 +445,12 @@ module.exports =  mozaik => {
       mozaik.logger.info(chalk.green('Loaded slack', channels.length, 'channels:'));
 
       channels.forEach(channel=> mozaik.logger.info(chalk.green(`\t${channel.name}`)));
+
       return getUsers(token);
     })
     .then((users) => {
       mozaik.logger.info(chalk.green('Loaded', users.length, 'slack users:'));
+
       users.forEach(user=>mozaik.logger.info(chalk.green(`\t${user.name}`)));
       setInterval(reListen, reConnectInterval);
       reListen();
@@ -448,5 +467,3 @@ module.exports =  mozaik => {
 function required() {
   throw new Error('Missing requirement');
 }
-
-// module.exports = [client, replaceEmojis, matchChannel];

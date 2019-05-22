@@ -5,7 +5,6 @@ import hash from 'hash.js';
 
 import ReactDOM from 'react-dom';
 
-import classNames from 'classnames';
 import moment     from 'moment';
 
 import PropTypes from 'prop-types';
@@ -13,7 +12,7 @@ import PropTypes from 'prop-types';
 import Since   from './Since.js';
 import Impulse from './Impulse.js';
 
-import {Slack} from 'react-feather';
+import { Slack } from 'react-feather';
 
 import {
   Widget,
@@ -25,6 +24,7 @@ const MIN_FONT_SIZE = 10;
 
 function getStoreValue(key) {
   console.log(`getStoreValue(${JSON.stringify(key)}`);
+
   if (typeof(Storage) === 'undefined') {
     return;
   }
@@ -48,14 +48,14 @@ class Channel extends Component {
 
     const identifier = hash.sha256().update(`${props.channel || ''}${props.keyword || ''}`).digest('hex');
 
-    this.mounted = false;
-    this.matcher = this.props.keyword ? new RegExp(this.props.keyword, 'i') : null;
+    this.mounted   = false;
+    this.matcher   = this.props.keyword ? new RegExp(this.props.keyword, 'i') : null;
     this.requestId = `slack.message.${identifier}`;
 
     this.state = {
       message: "",
-      width: 100,
-      height: 100
+      width:   100,
+      height:  100
     };
   }
 
@@ -68,7 +68,7 @@ class Channel extends Component {
 
     this.setState({
       height: bodyElement.clientHeight,
-      width: bodyElement.clientWidth
+      width:  bodyElement.clientWidth
     });
   }
 
@@ -79,11 +79,12 @@ class Channel extends Component {
 
   static getApiRequest(obj) {
     const identifier = hash.sha256().update(`${obj.channel || ''}`).digest('hex');
+
     console.log('Channel: getApiRequest()');
     console.log(`slack.message.${identifier}`);
 
     return {
-      id: `slack.message.${identifier}`,
+      id:     `slack.message.${identifier}`,
       params: {
         channel: obj.channel
       }
@@ -92,6 +93,7 @@ class Channel extends Component {
 
   onApiData(message) {
     console.log(`Channel: onApiData(${JSON.stringify(message, null, 2)})`);
+
     // Clone the message since same object can be provided to others
     message = _.cloneDeep(message);
 
@@ -235,6 +237,7 @@ class Channel extends Component {
     };
 
     let footerStyle = slackChannelFooter;
+
     if(content.empty) {
       footerStyle = {...footerStyle }
     }
@@ -246,50 +249,41 @@ class Channel extends Component {
       };
     }
 
-    content.footerClass = classNames('slack-channel__footer', {
-      'slack-channel__footer--empty': content.empty,
-      'slack-channel__footer--image': message ? message.image : false
-    });
-
     const pulse =(this.props.showPulse && this.renderPulse)  ? <Impulse className="slack-channel__impulse" message={content.text}></Impulse> : null;
 
-    let slackChannelMessageValueStyle = (
-      {
-        position:   "absolute",
-        top:        "20%",
-        width:      "100%",
-        textAlign:  "center",
-        fontSize:   "2rem",
-        lineHeight: "2.5rem",
-        zIndex:     "5000"
-      }
-    );
+    let slackChannelMessageValueStyle = {
+      position:   "absolute",
+      top:        "20%",
+      width:      "100%",
+      textAlign:  "center",
+      fontSize:   "2rem",
+      lineHeight: "2.5rem",
+      zIndex:     "5000"
+    };
 
-    let slackChannelFooterAvatarStyle = (
-      {
-        float: "left"
-      }
-    );
+    let slackChannelFooterAvatarStyle = {
+      float: "left"
+    };
 
   let slackChannelFooterMetaStyle = {
-      float:      "left",
-      margin:     "0",
-      boxSizing:  "border-box"
-    };
+    float:      "left",
+    margin:     "0",
+    boxSizing:  "border-box"
+  };
 
   let slackChannelFooterAuthorStyle = {
-      float:      "none",
-      marginLeft: "1.6vmin",
-      fontSize:   "2vmin"
-    };
+    float:      "none",
+    marginLeft: "1.6vmin",
+    fontSize:   "2vmin"
+  };
 
   let slackChannelFooterDateStyle = {
-      float:       "none",
-      marginLeft:  "1.6vmin",
-      fontSize:    "1.6vmin",
-      position:    "relative",
-      bottom:      "1vmin"
-    };
+    float:       "none",
+    marginLeft:  "1.6vmin",
+    fontSize:    "1.6vmin",
+    position:    "relative",
+    bottom:      "1vmin"
+  };
 
     return (<Widget>
       <WidgetHeader title = {`Channel: ${this.props.channel}`} icon={Slack}>
@@ -328,9 +322,5 @@ Channel.defaultProps = {
   keyword:    null,
   imageSize: 'initial',
 };
-
-// apply the mixins on the component
-//reactMixin(Channel.prototype, ListenerMixin);
-// reactMixin(Channel.prototype, Mozaik.Mixin.ApiConsumer);
 
 export default Channel;

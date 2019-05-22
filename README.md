@@ -164,6 +164,11 @@ Distributed under the MIT license
 
 ## Changelog
 
+### Release 0.9.4
+- Started upgrade to Mozaik v2
+- Channel widget works with Mozaik v2
+- Updated the documentation
+
 ### Release 0.9.0
 
 - Added support for including/excluding channel messages by using advanced globbing channel name rules like: `general, !sales, team-*` (general -channel and all the channels starging with "team-". Explicitly no sales)

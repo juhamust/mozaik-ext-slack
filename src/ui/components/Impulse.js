@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import reactMixin from 'react-mixin';
-
-import { ListenerMixin } from 'reflux';
-
-
 import PropTypes from 'prop-types';
 
 import Mozaik from '@mozaik/ui';
 
-var d3 = require('d3');
+var d3   = require('d3');
 var ease = require('d3-ease');
 
 import _ from 'lodash';
@@ -50,21 +45,21 @@ export default class Impulse extends Component {
 
     this.state = {
       colorIndex: 0,
-      height: 400,
-      width: 400
+      height:     400,
+      width:      400
     };
 
-    this.config = _.defaultsDeep(this.props.config || {}, {
-      delay: 10,
-      count: 8,
-      duration: 4000,
+    this.config = _.defaultsDeep(this.props.config || { }, {
+      delay:       10,
+      count:       8,
+      duration:    4000,
       strokeWidth: 20,
       // Defaults to Slack colours
       colors: [
         { r: 112, g: 204, b: 220 }, // blue
-        { r: 223, g: 168, b: 35 }, // orange
-        { r: 225, g: 22, b: 101 }, // red
-        { r: 61, g: 186, b: 145 } // green
+        { r: 223, g: 168, b: 35  }, // orange
+        { r: 225, g: 22,  b: 101 }, // red
+        { r: 61,  g: 186, b: 145 }  // green
       ]
     });
   }
@@ -90,6 +85,7 @@ export default class Impulse extends Component {
   componentWillReceiveProps() {
     // Increase / reset the color index on each update
     const nextColorIndex = this.state.colorIndex < (this.config.colors.length - 1) ? this.state.colorIndex + 1 : 0;
+
     this.setState({ colorIndex: nextColorIndex });
   }
 

@@ -39,13 +39,6 @@ const config = convict({
     //     "ts":      "1475003567.000006",
     //     "team":    "T0254ARL8"
     //   }
-
-    echoMessage: {
-      doc:     'Slack message to simulate',
-      default: {},
-      format:  Object,
-      env:     'SLACK_ECHO_MESSAGE'
-    }
   }
 });
 
