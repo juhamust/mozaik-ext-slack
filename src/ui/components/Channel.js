@@ -78,9 +78,12 @@ class Channel extends Component {
   }
 
   static getApiRequest(obj) {
+    const identifier = hash.sha256().update(`${obj.channel || ''}`).digest('hex');
     console.log('Channel: getApiRequest()');
+    console.log(`slack.message.${identifier}`);
+
     return {
-      id: `slack.message`,
+      id: `slack.message.${identifier}`,
       params: {
         channel: obj.channel
       }
@@ -140,8 +143,6 @@ class Channel extends Component {
             apiData,
             theme,
           } = this.props;
-
-    console.log(JSON.stringify(apiData, null, 2));
     const message = apiData;
 
     let content = {

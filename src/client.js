@@ -24,10 +24,12 @@ let logger = null;
 // rules (separated with comma) and returns true if match
 function matchChannel(channelName, filterString) {
   logger.info(chalk.green("matchChannel"));
-  return mm(
+  let result = mm(
     channelName.replace('#', ''),
     filterString.split(',').map(filter => filter.trim())
   );
+
+  return result.length !== 0;
 }
 
 function getChannels(token) {
@@ -321,7 +323,9 @@ module.exports =  mozaik => {
 
     message(send, params = {}) {
 
+
       logger.info("Inside 'message' call");
+      logger.info(`params = ${JSON.stringify(params)}`);
 
       if (!_.isFunction(send)) {
         mozaik.logger.error(chalk.red('mozaik-ext-slack supports only push API'));
@@ -383,6 +387,7 @@ module.exports =  mozaik => {
               return;
             }
 
+            console.log("Trying to filter");
             // Filter with params by using micromatch module
             // See options in documentation: https://www.npmjs.com/package/micromatch
             if (params.channel && !matchChannel(channel.name, params.channel)) {
@@ -390,6 +395,7 @@ module.exports =  mozaik => {
               return;
             }
 
+            console.log("Passed filter");
             // Delete old files async (not interested in outcome)
             // deleteFiles(path.join(publicDir, tempDirName), maxImageAge);
 
