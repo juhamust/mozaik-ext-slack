@@ -11,7 +11,6 @@ var ease = require('d3-ease');
 import _ from 'lodash';
 
 function pulse(opts) {
-  console.log(`Impulse: pulse(${opts}})`);
   for (var i = 1; i < opts.count; ++i) {
     d3.select(opts.element)
       .append('circle')
@@ -36,9 +35,8 @@ function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export default class Impulse extends Component {
+class Impulse extends Component {
   constructor(props) {
-    console.log('Impulse: constructor()');
     super(props);
 
     this.mounted = false;
@@ -65,7 +63,6 @@ export default class Impulse extends Component {
   }
 
   componentDidMount() {
-    console.log('Impulse: componentDidMount()');
     this.mounted = true;
 
     // Get area size
@@ -109,7 +106,7 @@ export default class Impulse extends Component {
 
     return (
       <div className="slack__impulse--body widget__body" ref={(c) => this._body = c}>
-        <svg ref={(c) => this._svg = c} height={this.state.height} width={this.state.width}></svg>
+        <svg ref={(c) => this._svg = c} height={this.state.height} width={this.state.width}/>
       </div>
     );
   }
@@ -127,3 +124,4 @@ Impulse.defaultProps = {
   channel: null
 };
 
+export default Impulse;

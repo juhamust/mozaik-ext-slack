@@ -10,7 +10,6 @@ class Since extends Component {
     super(props);
 
     this.mounted = false;
-    this.intervalId;
 
     this.state = {
       humanizedDuration: this.getDuration().humanize(true)

@@ -1,24 +1,20 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
-import _    from 'lodash';
+import _ from 'lodash';
 import hash from 'hash.js';
 
 import ReactDOM from 'react-dom';
 
-import moment     from 'moment';
+import moment from 'moment';
 
 import PropTypes from 'prop-types';
 
-import Since   from './Since.js';
+import Since from './Since.js';
 import Impulse from './Impulse.js';
 
-import { Slack } from 'react-feather';
+import {Slack} from 'react-feather';
 
-import {
-  Widget,
-  WidgetHeader,
-  WidgetBody,
-} from '@mozaik/ui';
+import {Widget, WidgetBody, WidgetHeader,} from '@mozaik/ui';
 
 const MIN_FONT_SIZE = 10;
 
@@ -171,7 +167,7 @@ class Channel extends Component {
       };
       content.author = message.user.name;
       content.avatar = message.user.profileImage;
-      content.date   = (<Since time={time}></Since>);
+      content.date   = (<Since time={time}/>);
     }
 
     const fontSize = this.getFontSize(this.state.width, this.state.height, content.text.length);
@@ -179,49 +175,44 @@ class Channel extends Component {
     content.style.fontSize   = fontSize;
     content.style.lineHeight = `${fontSize + 2}px`;
 
-  let slackChannelMessageImage = {
+  let slackChannelMessageImageStyle = {
       top:    "auto",
       height: "100%",
       width:  "100%"
   };
 
-  let slackChannelMessageValue = {
-      height: "100%",
-      width:  "100%"
-  };
-
-  let slackChannelMessageEmpty = {
+  let slackChannelMessageEmptyStyle = {
       color:       "gray",
       textShadow: "0 -2px 0 black"
   };
 
-  let slackChannelMessage  = {
-      position:    "absolute",
-      top:         "20%",
-      width:       "100%",
+  let slackChannelMessageStyle  = {
+      position:   "absolute",
+      top:        "20%",
+      width:      "100%",
       textAlign:  "center",
       fontSize:   "2rem",
       lineHeight: "2.5rem",
-      zIndex:     "5000"
+      zIndex:     "5000",
+      overflowY:  "hidden"
     };
-
 
     // Construct classes
     let bodyStyle = {
-      ...slackChannelMessage,
+      ...slackChannelMessageStyle,
     };
 
     if(content.empty) {
       bodyStyle = {
         ...bodyStyle,
-        ...slackChannelMessageEmpty
+        ...slackChannelMessageEmptyStyle
       };
     }
 
     if(message) {
       bodyStyle = {
         ...bodyStyle,
-        ...slackChannelMessageImage
+        ...slackChannelMessageImageStyle
       };
     }
 
@@ -229,14 +220,12 @@ class Channel extends Component {
       backgroundColor: "black"
     };
 
-    let slackChannelFooter = {
+    let footerStyle = {
       position: "absolute",
-      bottom: "0",
-      width: "100%",
-      height: "48px"
+      bottom:   "0",
+      width:    "100%",
+      height:   "48px"
     };
-
-    let footerStyle = slackChannelFooter;
 
     if(content.empty) {
       footerStyle = {...footerStyle }
@@ -258,7 +247,10 @@ class Channel extends Component {
       textAlign:  "center",
       fontSize:   "2rem",
       lineHeight: "2.5rem",
-      zIndex:     "5000"
+      zIndex:     "5000",
+      overflowY:  "hidden",
+      color:      "white",
+      textShadow: "1px 1px 0px rgba(0,0,0,0.35)"
     };
 
     let slackChannelFooterAvatarStyle = {
@@ -289,7 +281,7 @@ class Channel extends Component {
       <WidgetHeader title = {`Channel: ${this.props.channel}`} icon={Slack}>
 
       </WidgetHeader>
-      <WidgetBody ref={(c) => this._body = c}>
+      <WidgetBody ref={(c) => this._body = c} style={{ overflowY: "hidden"}}>
         <div style={bodyStyle}>
           <div style={slackChannelMessageValueStyle}>{content.text}</div>
         </div>

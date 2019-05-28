@@ -28,6 +28,12 @@ const config = convict({
       format:  Boolean,
       env:     'SLACK_SHOW_IMAGES'
     },
+    echoMessage: {
+      doc: 'A message to send regularly for testing',
+      default: null,
+      format: Object,
+      env: 'SLACK_ECHO_MESSAGE'
+    }
     // For testing/development
     // NOTE: Use JSON in .env
     // Example:

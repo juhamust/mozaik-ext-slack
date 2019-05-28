@@ -20,11 +20,12 @@ var ease = require('d3-ease');
 
 import _ from 'lodash';
 
-export default class Pulse extends Component {
+class Pulse extends Component {
   constructor(props) {
-    console.log('Pulse: constructor()');
+
     super(props);
 
+    console.log('Pulse: constructor()');
     this.mounted = false;
 
     this.state = {
@@ -32,14 +33,15 @@ export default class Pulse extends Component {
     };
   }
 
-  getApiRequest() {
+  static getApiRequest(obj) {
     console.log('Pulse: getApiRequest()');
-    const requestId = this.props.channel ? `slack.message.${this.props.channel}` : 'slack.message';
+
+    const requestId = obj.channel ? `slack.message.${obj.channel}` : 'slack.message';
 
     return {
       id: requestId,
       params: {
-        channel: this.props.channel
+        channel: obj.channel
       }
     };
   }
@@ -51,7 +53,12 @@ export default class Pulse extends Component {
     });
   }
 
-  render() {
+  render(obj) {
+    const {
+            apiData,
+            theme,
+          } = this.props;
+
     const title = this.props.title;
 
     return (
@@ -59,7 +66,7 @@ export default class Pulse extends Component {
         <WidgetHeader title={title} icon={Slack}>
         </WidgetHeader>
         <WidgetBody>
-          <Impulse message={this.state.message}></Impulse>
+          <Impulse message={apiData}/>
         </WidgetBody>
       </Widget>
     );
@@ -75,7 +82,5 @@ Pulse.defaultProps = {
   title:   'Slack',
   channel:  null
 };
-//
-// // apply the mixins on the component
-// reactMixin(Pulse.prototype, ListenerMixin);
-// reactMixin(Pulse.prototype, Mozaik.Mixin.ApiConsumer);
+
+export default Pulse;
