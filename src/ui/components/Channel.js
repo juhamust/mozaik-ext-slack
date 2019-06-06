@@ -224,7 +224,8 @@ class Channel extends Component {
       position: "absolute",
       bottom:   "0",
       width:    "100%",
-      height:   "48px"
+      height:   "48px",
+      backgroundColor: "rgba(0, 0, 0, 0.06)"
     };
 
     if(content.empty) {
@@ -245,12 +246,13 @@ class Channel extends Component {
       top:        "20%",
       width:      "100%",
       textAlign:  "center",
-      fontSize:   "2rem",
-      lineHeight: "2.5rem",
+      fontSize:   "1.5rem",
+      lineHeight: "2rem",
       zIndex:     "5000",
       overflowY:  "hidden",
       color:      "white",
-      textShadow: "1px 1px 0px rgba(0,0,0,0.35)"
+      textShadow: "1px 1px 0px rgba(0,0,0,0.35)",
+
     };
 
     let slackChannelFooterAvatarStyle = {
