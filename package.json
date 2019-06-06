@@ -1,6 +1,6 @@
 {
   "name": "mozaik-ext-slack",
-  "version": "0.9.8-alpha.61",
+  "version": "0.9.8-alpha.63",
   "description": "Slack widgets to Mozaik dashboard",
   "author": "Juha Mustonen",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "request-promise-native": "^1.0.3",
     "sha.js": "^2.4.10",
     "slack": "^7.3.0",
-    "slack-remove-formatting": "^0.2.0",
+    "slack-remove-formatting": "^0.1.1",
     "styled-components": "^3.0.2",
     "url-parse": "^1.2.0",
     "util.promisify": "^1.0.0",
