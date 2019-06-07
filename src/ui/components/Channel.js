@@ -211,6 +211,7 @@ class Channel extends Component {
 
     if(message) {
       bodyStyle = {
+        ...content.style,
         ...bodyStyle,
         ...slackChannelMessageImageStyle
       };

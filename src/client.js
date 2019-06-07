@@ -112,9 +112,24 @@ function getUser(token, opts) {
 }
 
 function getImage(token, opts = {}) {
-  logger.info(chalk.green("getImage"));
+  logger.info(chalk.green("Inside of getImage()"));
+
+  logger.info("");
+  logger.info(chalk.yellow(JSON.stringify(opts)));
+  logger.info("");
+
   if (!opts.file || !opts.showImages) {
+    if(!opts.file) {
+      logger.info(chalk.green("There was no file in this message"));
+    }
+
+    if(!opts.showImages) {
+
+      logger.info(chalk.green("Config says not to show images, so we are skipping out."));
+    }
     return Promise.resolve();
+  } else {
+    logger.info(chalk.green("Config says to show images, so we are going to download this one."));
   }
 
   const outputPath = path.join(
@@ -137,14 +152,14 @@ function getImage(token, opts = {}) {
  * Replace multiple emojis from text like "hello there! :smile: :smirk:"
  */
 function replaceEmojis(text, offset = 0) {
-  console.log("ReplaceEmojis()");
+  logger.info("ReplaceEmojis()");
 
   const match = text.match(/(:((\w|\+|_)+):)+/);
 
-  console.log(`match = ${match}`);
+  logger.info(`match = ${match}`);
 
   if (match) {
-    console.log(`Found an emoji: ${match}`);
+    logger.info(`Found an emoji: ${match}`);
 
     // Increase the search index
     const postIndex = match.index + match[0].length;
@@ -152,14 +167,14 @@ function replaceEmojis(text, offset = 0) {
     // Collect the emoji character if found, default back to :placeholder:
     const emojiChar = emoji.lib[match[2]] ? emoji.lib[match[2]].char : match[1];
 
-    console.log(`Emojichar: ${emojiChar}`);
+    logger.info(`Emojichar: ${emojiChar}`);
 
     text = text.substr(offset, postIndex).replace(match[1], emojiChar) + replaceEmojis(text.substr(postIndex));
   } else {
-    console.log(`${match} did not contain an emoji`);
+    logger.info(`${match} did not contain an emoji`);
   }
 
-  console.log(`returning ${text}`);
+  logger.info(`returning ${text}`);
   return text;
 }
 
@@ -206,6 +221,8 @@ function deleteFiles(tempDir, maxAge = required()) {
 }
 
 function downloadFile(token, opts = {}) {
+  logger.info("Downloading file!");
+
   const options = {
     url: opts.url,
     headers: {
@@ -225,8 +242,11 @@ function downloadFile(token, opts = {}) {
       req.on('response', function (res) {
 
         if (res.statusCode !== 200) {
+          logger.info("File download request failed!");
           reject(new Error('Received 200 response'));
         }
+
+        logger.info("File is downloading!");
 
         const encoding = res.headers['content-encoding'];
 
@@ -240,6 +260,7 @@ function downloadFile(token, opts = {}) {
       });
 
       req.on('error', (err) => {
+        logger.info("Unexpected error downloading file.");
         reject(err);
       });
     };
@@ -252,11 +273,15 @@ function downloadFile(token, opts = {}) {
 }
 
 function dirExists(dir) {
+  logger.info("Inside dirExists");
+
   let exists;
 
   try {
     exists = fs.statSync(dir).isDirectory();
+    logger.info(`directory (${dir}) exists!`);
   } catch (e) {
+    logger.info(`directory (${dir}) does not exist :-(`);
     exists = false;
   }
 
@@ -284,7 +309,7 @@ module.exports =  mozaik => {
 
   // Validate config
   if (!token) {
-    mozaik.logger.error(chalk.red('Missing config key "slack.token", ignoring client'));
+    logger.error(chalk.red('Missing config key "slack.token", ignoring client'));
     return;
   }
 
@@ -292,12 +317,12 @@ module.exports =  mozaik => {
   const echoMessage = config.get('slack.echoMessage');
 
   if (echoMessage && !_.isEmpty(echoMessage)) {
-    mozaik.logger.warn(chalk.yellow('Emulating Slack messages for demo purposes'), typeof echoMessage, echoMessage);
+    logger.warn(chalk.yellow('Emulating Slack messages for demo purposes'), typeof echoMessage, echoMessage);
 
     bot = new EchoClient(echoMessage);
   }
   else {
-    mozaik.logger.info(chalk.green('Registering Slack client'));
+    logger.info(chalk.green('Registering Slack client'));
 
     bot = slack.rtm.client(token)
   }
@@ -309,11 +334,11 @@ module.exports =  mozaik => {
     } catch (e) {
       // Closing failed (or not opened yet)
     } finally {
-      console.log('Bot is listening');
+      logger.info('Bot is listening');
       bot.listen({ token });
     }
 
-    mozaik.logger.info(chalk.green('Started listening Slack events'));
+    logger.info(chalk.green('Started listening Slack events'));
 
     return bot;
   };
@@ -322,10 +347,14 @@ module.exports =  mozaik => {
   const tempDir = path.join(publicDir, tempDirName);
 
   if (showImages && !dirExists(tempDir)) {
+    logger.info(chalk.green('We are showing images, and the temporary directory does not exist.'));
+    logger.info(chalk.green(`Creating directory ${tempDir}`));
+
     try {
       fs.mkdirSync(tempDir);
     } catch (e) {
-      mozaik.logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`), e);
+      logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`), e);
+      logger.warn(chalk.red('Not showing images since we could not access the images directory.'));
       showImages = false;
     }
   }
@@ -334,14 +363,14 @@ module.exports =  mozaik => {
   const apiCalls = {
     message(send, params = {}) {
 
-      console.log(`send = ${JSON.stringify(send, null, 2)}`);
+      logger.info(`send = ${JSON.stringify(send, null, 2)}`);
 
       logger.info("Inside 'message' call");
       logger.info(`send = ${JSON.stringify(send)}`);
       logger.info(`params = ${JSON.stringify(params)}`);
 
       if (!_.isFunction(send)) {
-        mozaik.logger.error(chalk.red('mozaik-ext-slack supports only push API'));
+        logger.error(chalk.red('mozaik-ext-slack supports only push API'));
 
         return Promise.reject(new Error('Use push API with mozaik-ext-slack'));
       }
@@ -353,7 +382,7 @@ module.exports =  mozaik => {
 
       bot.message((message) => {
         logger.info("message from slack bot");
-        mozaik.logger.info(message);
+        logger.info(message);
 
         // Harmonize the user and bot data by loading them into userInfo
         let userPromise = null;
@@ -388,7 +417,7 @@ module.exports =  mozaik => {
           getChannel(token, { id: message.channel }),
           getImage(token, {
             publicDir:  publicDir,
-            file:       message.file,
+            file:       message.files ? message.files[0] : undefined,
             showImages: showImages
           })
         ])
@@ -400,7 +429,7 @@ module.exports =  mozaik => {
               return;
             }
 
-            console.log("Trying to filter");
+            logger.info("Trying to filter");
 
             // Filter with params by using micromatch module
             // See options in documentation: https://www.npmjs.com/package/micromatch
@@ -409,7 +438,7 @@ module.exports =  mozaik => {
               return;
             }
 
-            console.log("Passed filter");
+            logger.info("Passed filter");
 
             // Delete old files async (not interested in outcome)
             // deleteFiles(path.join(publicDir, tempDirName), maxImageAge);
@@ -423,7 +452,7 @@ module.exports =  mozaik => {
 
             message.text  = replaceEmojis(message.text);
             message.image = image ? path.relative(publicDir, image) : null;
-            message.text  = image ? _.get(message, 'file.initial_comment.comment', null) || message.file.title : message.text;
+            message.text  = image ? _.get(message, 'file.initial_comment.comment', null) || message.files[0].title : message.text;
 
             // Replace ids with data
             message.user    = user;
@@ -442,21 +471,21 @@ module.exports =  mozaik => {
   // Initiate by caching some data
   getChannels(token)
     .then((channels) => {
-      mozaik.logger.info(chalk.green('Loaded slack', channels.length, 'channels:'));
+      logger.info(chalk.green('Loaded slack', channels.length, 'channels:'));
 
-      channels.forEach(channel=> mozaik.logger.info(chalk.green(`\t${channel.name}`)));
+      channels.forEach(channel=> logger.info(chalk.green(`\t${channel.name}`)));
 
       return getUsers(token);
     })
     .then((users) => {
-      mozaik.logger.info(chalk.green('Loaded', users.length, 'slack users:'));
+      logger.info(chalk.green('Loaded', users.length, 'slack users:'));
 
-      users.forEach(user=>mozaik.logger.info(chalk.green(`\t${user.name}`)));
+      users.forEach(user=>logger.info(chalk.green(`\t${user.name}`)));
       setInterval(reListen, reConnectInterval);
       reListen();
     })
     .catch((err) => {
-      mozaik.logger.warn(chalk.yellow('Failure while initiating slack data:', err));
+      logger.warn(chalk.yellow('Failure while initiating slack data:', err));
       setInterval(reListen, reConnectInterval);
       reListen();
     });
