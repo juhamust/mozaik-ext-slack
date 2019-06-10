@@ -164,9 +164,8 @@ Distributed under the MIT license
 
 ## Changelog
 
-### Release 0.9.4
-- Started upgrade to Mozaik v2
-- Channel widget works with Mozaik v2
+### Release 0.9.1
+- Upgraded extension to work with Mozaik v2
 - Updated the documentation
 
 ### Release 0.9.0
