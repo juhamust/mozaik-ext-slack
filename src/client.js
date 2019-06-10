@@ -23,7 +23,6 @@ let logger = null;
 // Check if provided channel name matches with micromatch
 // rules (separated with comma) and returns true if match
 function matchChannel(channelName, filterString) {
-  logger.info(chalk.green("matchChannel"));
 
   let result = mm(
     channelName.replace('#', ''),
@@ -34,7 +33,6 @@ function matchChannel(channelName, filterString) {
 }
 
 function getChannels(token) {
-  logger.info(chalk.green("getChannels"));
 
   return new Promise((resolve, reject) => {
     // Return cached data if available
@@ -55,7 +53,6 @@ function getChannels(token) {
 }
 
 function getUsers(token) {
-  logger.info(chalk.green("getUsers()"));
   return new Promise((resolve, reject) => {
     // Return cached data if available
     if (users) {
@@ -73,9 +70,6 @@ function getUsers(token) {
 }
 
 function getBotInfo(token, opts) {
-
-  logger.info(chalk.green(`Get bot info: ${opts.botId}`));
-
   return new Promise((resolve, reject) => {
     // Return cached data if available
     // Fetch channels data from Slack
@@ -91,8 +85,7 @@ function getBotInfo(token, opts) {
 
 // Get cached list of users
 function getChannel(token, opts) {
-  logger.info(chalk.green(`getChannel(${token}, ${JSON.stringify(opts, null, 2)}`));
-  logger.info(chalk.green('Fetching channel:', opts));
+
   return getChannels()
     .then((channels) => {
       // NOTE: Matches with Slack response. Example: { id: 'T01233' } or { name: 'bar' }
@@ -102,7 +95,6 @@ function getChannel(token, opts) {
 
 // Get cached list of users
 function getUser(token, opts) {
-  logger.info(chalk.green('Fetching user:'), opts);
   return getUsers()
     .then((users) => {
 
@@ -112,24 +104,12 @@ function getUser(token, opts) {
 }
 
 function getImage(token, opts = {}) {
-  logger.info(chalk.green("Inside of getImage()"));
-
-  logger.info("");
-  logger.info(chalk.yellow(JSON.stringify(opts)));
-  logger.info("");
-
   if (!opts.file || !opts.showImages) {
     if(!opts.file) {
-      logger.info(chalk.green("There was no file in this message"));
     }
 
-    if(!opts.showImages) {
 
-      logger.info(chalk.green("Config says not to show images, so we are skipping out."));
-    }
     return Promise.resolve();
-  } else {
-    logger.info(chalk.green("Config says to show images, so we are going to download this one."));
   }
 
   const outputPath = path.join(
@@ -143,7 +123,6 @@ function getImage(token, opts = {}) {
     outputPath: outputPath
   })
     .then(() => {
-      logger.info(chalk.green(`Downloaded file ${opts.file.title}`));
       return Promise.resolve(outputPath);
     });
 }
@@ -152,14 +131,10 @@ function getImage(token, opts = {}) {
  * Replace multiple emojis from text like "hello there! :smile: :smirk:"
  */
 function replaceEmojis(text, offset = 0) {
-  logger.info("ReplaceEmojis()");
 
   const match = text.match(/(:((\w|\+|_)+):)+/);
 
-  logger.info(`match = ${match}`);
-
   if (match) {
-    logger.info(`Found an emoji: ${match}`);
 
     // Increase the search index
     const postIndex = match.index + match[0].length;
@@ -167,14 +142,10 @@ function replaceEmojis(text, offset = 0) {
     // Collect the emoji character if found, default back to :placeholder:
     const emojiChar = emoji.lib[match[2]] ? emoji.lib[match[2]].char : match[1];
 
-    logger.info(`Emojichar: ${emojiChar}`);
 
     text = text.substr(offset, postIndex).replace(match[1], emojiChar) + replaceEmojis(text.substr(postIndex));
-  } else {
-    logger.info(`${match} did not contain an emoji`);
   }
 
-  logger.info(`returning ${text}`);
   return text;
 }
 
@@ -200,8 +171,6 @@ function deleteFiles(tempDir, maxAge = required()) {
 
           if (age > maxAge) {
 
-            logger.info(chalk.green('Delete'), entry);
-
             return new Promise((res, rej) => {
               fs.unlink(entryPath, (err) => {
                 if (err) {
@@ -221,12 +190,11 @@ function deleteFiles(tempDir, maxAge = required()) {
 }
 
 function downloadFile(token, opts = {}) {
-  logger.info("Downloading file!");
 
   const options = {
     url: opts.url,
     headers: {
-      'Authorization':   `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
       'accept-encoding': 'gzip,deflate'
     }};
 
@@ -242,11 +210,8 @@ function downloadFile(token, opts = {}) {
       req.on('response', function (res) {
 
         if (res.statusCode !== 200) {
-          logger.info("File download request failed!");
           reject(new Error('Received 200 response'));
         }
-
-        logger.info("File is downloading!");
 
         const encoding = res.headers['content-encoding'];
 
@@ -260,7 +225,6 @@ function downloadFile(token, opts = {}) {
       });
 
       req.on('error', (err) => {
-        logger.info("Unexpected error downloading file.");
         reject(err);
       });
     };
@@ -273,15 +237,12 @@ function downloadFile(token, opts = {}) {
 }
 
 function dirExists(dir) {
-  logger.info("Inside dirExists");
 
   let exists;
 
   try {
     exists = fs.statSync(dir).isDirectory();
-    logger.info(`directory (${dir}) exists!`);
   } catch (e) {
-    logger.info(`directory (${dir}) does not exist :-(`);
     exists = false;
   }
 
@@ -292,8 +253,6 @@ function dirExists(dir) {
 module.exports =  mozaik => {
   logger = mozaik.logger;
 
-  logger.info(chalk.green("Testing logger"));
-  logger.info(chalk.green("Loading mozaik-ext-slack config"));
 
   // NOTE: Loaded here to avoid issues with testing
   const config = require('./config').default;
@@ -324,17 +283,15 @@ module.exports =  mozaik => {
   else {
     logger.info(chalk.green('Registering Slack client'));
 
-    bot = slack.rtm.client(token)
+    bot = slack.rtm.client(token);
   }
 
   const reListen = () => {
-    logger.info("reListen()");
     try {
       bot.close();
     } catch (e) {
       // Closing failed (or not opened yet)
     } finally {
-      logger.info('Bot is listening');
       bot.listen({ token });
     }
 
@@ -347,14 +304,10 @@ module.exports =  mozaik => {
   const tempDir = path.join(publicDir, tempDirName);
 
   if (showImages && !dirExists(tempDir)) {
-    logger.info(chalk.green('We are showing images, and the temporary directory does not exist.'));
-    logger.info(chalk.green(`Creating directory ${tempDir}`));
 
     try {
       fs.mkdirSync(tempDir);
     } catch (e) {
-      logger.warn(chalk.red(`Failed to create tmp directory for images: ${tempDir}`), e);
-      logger.warn(chalk.red('Not showing images since we could not access the images directory.'));
       showImages = false;
     }
   }
@@ -362,12 +315,6 @@ module.exports =  mozaik => {
   // NOTE: API uses push method, no promise response
   const apiCalls = {
     message(send, params = {}) {
-
-      logger.info(`send = ${JSON.stringify(send, null, 2)}`);
-
-      logger.info("Inside 'message' call");
-      logger.info(`send = ${JSON.stringify(send)}`);
-      logger.info(`params = ${JSON.stringify(params)}`);
 
       if (!_.isFunction(send)) {
         logger.error(chalk.red('mozaik-ext-slack supports only push API'));
@@ -381,8 +328,7 @@ module.exports =  mozaik => {
       }
 
       bot.message((message) => {
-        logger.info("message from slack bot");
-        logger.info(message);
+        //mozaik.logger.info(message);
 
         // Harmonize the user and bot data by loading them into userInfo
         let userPromise = null;
@@ -416,8 +362,8 @@ module.exports =  mozaik => {
           userPromise,
           getChannel(token, { id: message.channel }),
           getImage(token, {
-            publicDir:  publicDir,
-            file:       message.files ? message.files[0] : undefined,
+            publicDir: publicDir,
+            file: message.files ? message.files[0] : undefined,
             showImages: showImages
           })
         ])
@@ -429,7 +375,6 @@ module.exports =  mozaik => {
               return;
             }
 
-            logger.info("Trying to filter");
 
             // Filter with params by using micromatch module
             // See options in documentation: https://www.npmjs.com/package/micromatch
@@ -438,16 +383,15 @@ module.exports =  mozaik => {
               return;
             }
 
-            logger.info("Passed filter");
 
             // Delete old files async (not interested in outcome)
             // deleteFiles(path.join(publicDir, tempDirName), maxImageAge);
 
-             //Remove Slack syntax to make outcome more readable
-             const removeFormat = getFormatRemover({
-               users:    users,
-               channels: channels
-             });
+            //Remove Slack syntax to make outcome more readable
+            const removeFormat = getFormatRemover({
+              users: users,
+              channels: channels
+            });
             message.text  = removeFormat(message.text || '');
 
             message.text  = replaceEmojis(message.text);
@@ -458,7 +402,6 @@ module.exports =  mozaik => {
             message.user    = user;
             message.channel = channel;
 
-            logger.info('Syncing Slack message:', message);
             send(message);
           })
           .catch((err) => {
@@ -471,16 +414,13 @@ module.exports =  mozaik => {
   // Initiate by caching some data
   getChannels(token)
     .then((channels) => {
-      logger.info(chalk.green('Loaded slack', channels.length, 'channels:'));
-
-      channels.forEach(channel=> logger.info(chalk.green(`\t${channel.name}`)));
+      logger.info(chalk.green('Loaded slack', channels.length, 'channels'));
 
       return getUsers(token);
     })
     .then((users) => {
-      logger.info(chalk.green('Loaded', users.length, 'slack users:'));
+      logger.info(chalk.green('Loaded', users.length, 'slack users'));
 
-      users.forEach(user=>logger.info(chalk.green(`\t${user.name}`)));
       setInterval(reListen, reConnectInterval);
       reListen();
     })

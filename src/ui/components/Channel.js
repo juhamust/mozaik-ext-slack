@@ -19,7 +19,6 @@ import {Widget, WidgetBody, WidgetHeader,} from '@mozaik/ui';
 const MIN_FONT_SIZE = 10;
 
 function getStoreValue(key) {
-  console.log(`getStoreValue(${JSON.stringify(key)}`);
 
   if (typeof(Storage) === 'undefined') {
     return;
@@ -29,7 +28,6 @@ function getStoreValue(key) {
 }
 
 function setStoreValue(key, value) {
-  console.log(value);
   if (typeof(Storage) === 'undefined') {
     return;
   }
@@ -39,7 +37,6 @@ function setStoreValue(key, value) {
 
 class Channel extends Component {
   constructor(props) {
-    console.log('Channel: constructor()');
     super(props);
 
     const identifier = hash.sha256().update(`${props.channel || ''}${props.keyword || ''}`).digest('hex');
@@ -49,14 +46,13 @@ class Channel extends Component {
     this.requestId = `slack.message.${identifier}`;
 
     this.state = {
-      message: "",
-      width:   100,
-      height:  100
+      message: '',
+      width: 100,
+      height: 100
     };
   }
 
   componentDidMount() {
-    console.log('Channel: componentDidMount()');
     this.mounted = true;
 
     // Get area size
@@ -64,23 +60,19 @@ class Channel extends Component {
 
     this.setState({
       height: bodyElement.clientHeight,
-      width:  bodyElement.clientWidth
+      width: bodyElement.clientWidth
     });
   }
 
   componentWillUnmount() {
-    console.log('Channel: componentDidUnmount()');
     this.mounted = false;
   }
 
   static getApiRequest(obj) {
     const identifier = hash.sha256().update(`${obj.channel || ''}`).digest('hex');
 
-    console.log('Channel: getApiRequest()');
-    console.log(`slack.message.${identifier}`);
-
     return {
-      id:     `slack.message.${identifier}`,
+      id: `slack.message.${identifier}`,
       params: {
         channel: obj.channel
       }
@@ -88,7 +80,6 @@ class Channel extends Component {
   }
 
   onApiData(message) {
-    console.log(`Channel: onApiData(${JSON.stringify(message, null, 2)})`);
 
     // Clone the message since same object can be provided to others
     message = _.cloneDeep(message);
@@ -116,7 +107,7 @@ class Channel extends Component {
     this.renderPulse = true;
 
     this.setState({
-       message: message
+      message: message
     });
   }
 
@@ -138,18 +129,18 @@ class Channel extends Component {
   render() {
 
     const {
-            apiData,
-            theme,
-          } = this.props;
+      apiData,
+      theme,
+    } = this.props;
     const message = apiData;
 
     let content = {
-      empty:  true,
-      title:  this.props.title || (this.props.channel ? `Slack #${this.props.channel}` : 'Slack'),
-      text:   'Send msg in Slack',
-      style:  { },
+      empty: true,
+      title: this.props.title || (this.props.channel ? `Slack #${this.props.channel}` : 'Slack'),
+      text: 'Send msg in Slack',
+      style: { },
       avatar: '',
-      date:   null
+      date: null
     };
 
     // Override actual content
@@ -160,9 +151,9 @@ class Channel extends Component {
       content.text  = message.text;
 
       content.style = {
-        backgroundImage:    `url(${message.image})`,
-        backgroundSize:     this.props.imageSize,
-        backgroundRepeat:   'no-repeat',
+        backgroundImage: `url(${message.image})`,
+        backgroundSize: this.props.imageSize,
+        backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center'
       };
       content.author = message.user.name;
@@ -175,26 +166,26 @@ class Channel extends Component {
     content.style.fontSize   = fontSize;
     content.style.lineHeight = `${fontSize + 2}px`;
 
-  let slackChannelMessageImageStyle = {
-      top:    "auto",
-      height: "100%",
-      width:  "100%"
-  };
+    let slackChannelMessageImageStyle = {
+      top: 'auto',
+      height: '100%',
+      width: '100%'
+    };
 
-  let slackChannelMessageEmptyStyle = {
-      color:       "gray",
-      textShadow: "0 -2px 0 black"
-  };
+    let slackChannelMessageEmptyStyle = {
+      color: 'gray',
+      textShadow: '0 -2px 0 black'
+    };
 
-  let slackChannelMessageStyle  = {
-      position:   "absolute",
-      top:        "20%",
-      width:      "100%",
-      textAlign:  "center",
-      fontSize:   "2rem",
-      lineHeight: "2.5rem",
-      zIndex:     "5000",
-      overflowY:  "hidden"
+    let slackChannelMessageStyle  = {
+      position: 'absolute',
+      top: '20%',
+      width: '100%',
+      textAlign: 'center',
+      fontSize: '2rem',
+      lineHeight: '2.5rem',
+      zIndex: '5000',
+      overflowY: 'hidden'
     };
 
     // Construct classes
@@ -218,19 +209,19 @@ class Channel extends Component {
     }
 
     let slackChannelFooterImage = {
-      backgroundColor: "black"
+      backgroundColor: 'black'
     };
 
     let footerStyle = {
-      position: "absolute",
-      bottom:   "0",
-      width:    "100%",
-      height:   "48px",
-      backgroundColor: "rgba(0, 0, 0, 0.06)"
+      position: 'absolute',
+      bottom: '0',
+      width: '100%',
+      height: '48px',
+      backgroundColor: 'rgba(0, 0, 0, 0.06)'
     };
 
     if(content.empty) {
-      footerStyle = {...footerStyle }
+      footerStyle = {...footerStyle };
     }
 
     if(message) {
@@ -244,48 +235,48 @@ class Channel extends Component {
     const pulse =(this.props.showPulse )  ? <Impulse className="slack-channel__impulse" message={content.text}></Impulse> : null;
 
     let slackChannelMessageValueStyle = {
-      position:   "absolute",
-      top:        "20%",
-      width:      "100%",
-      textAlign:  "center",
-      fontSize:   "1.5rem",
-      lineHeight: "2rem",
-      zIndex:     "5000",
-      overflowY:  "hidden",
-      color:      "white",
-      textShadow: "1px 1px 0px rgba(0,0,0,0.35)",
+      position: 'absolute',
+      top: '20%',
+      width: '100%',
+      textAlign: 'center',
+      fontSize: '1.5rem',
+      lineHeight: '2rem',
+      zIndex: '5000',
+      overflowY: 'hidden',
+      color: 'white',
+      textShadow: '1px 1px 0px rgba(0,0,0,0.35)',
 
     };
 
     let slackChannelFooterAvatarStyle = {
-      float: "left"
+      float: 'left'
     };
 
-  let slackChannelFooterMetaStyle = {
-    float:      "left",
-    margin:     "0",
-    boxSizing:  "border-box"
-  };
+    let slackChannelFooterMetaStyle = {
+      float: 'left',
+      margin: '0',
+      boxSizing: 'border-box'
+    };
 
-  let slackChannelFooterAuthorStyle = {
-    float:      "none",
-    marginLeft: "1.6vmin",
-    fontSize:   "2vmin"
-  };
+    let slackChannelFooterAuthorStyle = {
+      float: 'none',
+      marginLeft: '1.6vmin',
+      fontSize: '2vmin'
+    };
 
-  let slackChannelFooterDateStyle = {
-    float:       "none",
-    marginLeft:  "1.6vmin",
-    fontSize:    "1.6vmin",
-    position:    "relative",
-    bottom:      "1vmin"
-  };
+    let slackChannelFooterDateStyle = {
+      float: 'none',
+      marginLeft: '1.6vmin',
+      fontSize: '1.6vmin',
+      position: 'relative',
+      bottom: '1vmin'
+    };
 
     return (<Widget>
       <WidgetHeader title = {`Channel: ${this.props.channel}`} icon={Slack}>
 
       </WidgetHeader>
-      <WidgetBody ref={(c) => this._body = c} style={{ overflowY: "hidden"}}>
+      <WidgetBody ref={(c) => this._body = c} style={{ overflowY: 'hidden'}}>
         <div style={bodyStyle}>
           <div style={slackChannelMessageValueStyle}>{content.text}</div>
         </div>
@@ -303,19 +294,19 @@ class Channel extends Component {
 }
 
 Channel.propTypes = {
-  title:      PropTypes.string,
-  channel:    PropTypes.string,
+  title: PropTypes.string,
+  channel: PropTypes.string,
   showImages: PropTypes.bool,
-  showPulse:  PropTypes.bool,
-  keyword:    PropTypes.string,
-  imageSize:  PropTypes.oneOf(['initial', 'contain', 'cover'])
+  showPulse: PropTypes.bool,
+  keyword: PropTypes.string,
+  imageSize: PropTypes.oneOf(['initial', 'contain', 'cover'])
 };
 
 Channel.defaultProps = {
-  channel:    null,
+  channel: null,
   showImages: true,
-  showPulse:  false,
-  keyword:    null,
+  showPulse: false,
+  keyword: null,
   imageSize: 'initial',
 };
 

@@ -21,9 +21,9 @@ function pulse(opts) {
       .attr('fill', 'transparent')
       .attr('stroke', `rgba(${opts.color.r}, ${opts.color.g}, ${opts.color.b}, 255)`)
       .transition()
-        .delay(Math.pow(i, 2.5) * opts.delay)
-        .duration(opts.duration)
-        .ease(ease.easeQuadIn)
+      .delay(Math.pow(i, 2.5) * opts.delay)
+      .duration(opts.duration)
+      .ease(ease.easeQuadIn)
       .attr('stroke-width', 2)
       .attr('stroke', `rgba(${opts.color.r}, ${opts.color.g}, ${opts.color.b}, 0)`)
       .attr('r', opts.radius)
@@ -43,14 +43,14 @@ class Impulse extends Component {
 
     this.state = {
       colorIndex: 0,
-      height:     400,
-      width:      400
+      height: 400,
+      width: 400
     };
 
     this.config = _.defaultsDeep(this.props.config || { }, {
-      delay:       10,
-      count:       8,
-      duration:    4000,
+      delay: 10,
+      count: 8,
+      duration: 4000,
       strokeWidth: 20,
       // Defaults to Slack colours
       colors: [
@@ -70,8 +70,8 @@ class Impulse extends Component {
 
     this.setState({
       element: ReactDOM.findDOMNode(this._svg),
-      height:  bodyElement.clientHeight,
-      width:   bodyElement.clientWidth
+      height: bodyElement.clientHeight,
+      width: bodyElement.clientWidth
     });
   }
 
@@ -93,11 +93,11 @@ class Impulse extends Component {
     // NOTE: Modifying DOM with D3 is not ideal, consider
     // using https://github.com/Olical/react-faux-dom later on
     pulse(_.extend({
-      height:  this.state.height,
-      width:   this.state.width,
-      radius:  _.max([this.state.height, this.state.width]) + 100,
+      height: this.state.height,
+      width: this.state.width,
+      radius: _.max([this.state.height, this.state.width]) + 100,
       element: this.state.element,
-      color:   this.config.colors[this.state.colorIndex || 0],
+      color: this.config.colors[this.state.colorIndex || 0],
       position: {
         x: getRandom(0, this.state.width),
         y: getRandom(0, this.state.height)
@@ -113,14 +113,14 @@ class Impulse extends Component {
 }
 
 Impulse.propTypes = {
-  title:   PropTypes.string,
+  title: PropTypes.string,
   channel: PropTypes.string,
-  config:  PropTypes.object,
+  config: PropTypes.object,
   message: PropTypes.string
 };
 
 Impulse.defaultProps = {
-  title:  'Slack',
+  title: 'Slack',
   channel: null
 };
 

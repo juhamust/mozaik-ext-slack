@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 import ListenerMixin from 'reflux';
 import Mozaik from '@mozaik/ui';
@@ -9,7 +9,7 @@ import {
   Widget,
   WidgetHeader,
   WidgetBody,
-} from '@mozaik/ui'
+} from '@mozaik/ui';
 
 import PropTypes from 'prop-types';
 
@@ -25,7 +25,6 @@ class Pulse extends Component {
 
     super(props);
 
-    console.log('Pulse: constructor()');
     this.mounted = false;
 
     this.state = {
@@ -34,7 +33,6 @@ class Pulse extends Component {
   }
 
   static getApiRequest(obj) {
-    console.log('Pulse: getApiRequest()');
 
     const requestId = obj.channel ? `slack.message.${obj.channel}` : 'slack.message';
 
@@ -47,7 +45,6 @@ class Pulse extends Component {
   }
 
   onApiData(data) {
-    console.log(`Pulse: onApiData(${JSON.stringify(data, null, 2)})`);
     this.setState({
       message: data
     });
@@ -55,9 +52,9 @@ class Pulse extends Component {
 
   render(obj) {
     const {
-            apiData,
-            theme,
-          } = this.props;
+      apiData,
+      theme,
+    } = this.props;
 
     const title = this.props.title;
 
@@ -74,13 +71,13 @@ class Pulse extends Component {
 }
 
 Pulse.propTypes = {
-  title:   PropTypes.string,
+  title: PropTypes.string,
   channel: PropTypes.string,
 };
 
 Pulse.defaultProps = {
-  title:   'Slack',
-  channel:  null
+  title: 'Slack',
+  channel: null
 };
 
 export default Pulse;
