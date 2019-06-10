@@ -124,7 +124,7 @@ class Channel extends Component {
 
     // Set internal flag once the rendering is done
     // so that we don't draw pulse on every render (for example when switching widgets)
-    this.renderPulse = false;
+    //this.renderPulse = false;
   }
 
   getFontSize(width, height, textLength = 1) {
@@ -240,7 +240,8 @@ class Channel extends Component {
       };
     }
 
-    const pulse =(this.props.showPulse && this.renderPulse)  ? <Impulse className="slack-channel__impulse" message={content.text}></Impulse> : null;
+
+    const pulse =(this.props.showPulse )  ? <Impulse className="slack-channel__impulse" message={content.text}></Impulse> : null;
 
     let slackChannelMessageValueStyle = {
       position:   "absolute",
