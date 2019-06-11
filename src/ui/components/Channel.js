@@ -212,12 +212,21 @@ class Channel extends Component {
       backgroundColor: 'black'
     };
 
+
+    let color = require('color');
+
+
+    // get the widget background color but with 70% more transparent
+    let backgroundColor = color(theme.widget.background).fade(0.3).string();
+
+
     let footerStyle = {
       position: 'absolute',
       bottom: '0',
       width: '100%',
       height: '48px',
-      backgroundColor: 'rgba(0, 0, 0, 0.06)'
+      backgroundColor: backgroundColor,
+      zIndex: '5000'
     };
 
     if(content.empty) {
@@ -241,7 +250,6 @@ class Channel extends Component {
       textAlign: 'center',
       fontSize: '1.5rem',
       lineHeight: '2rem',
-      zIndex: '5000',
       overflowY: 'hidden',
       color: 'white',
       textShadow: '1px 1px 0px rgba(0,0,0,0.35)',
@@ -276,7 +284,7 @@ class Channel extends Component {
       <WidgetHeader title = {`Channel: ${this.props.channel}`} icon={Slack}>
 
       </WidgetHeader>
-      <WidgetBody ref={(c) => this._body = c} style={{ overflowY: 'hidden'}}>
+      <WidgetBody ref={(c) => this._body = c} style={{ overflowY: 'hidden'}} disablePadding={true}>
         <div style={bodyStyle}>
           <div style={slackChannelMessageValueStyle}>{content.text}</div>
         </div>

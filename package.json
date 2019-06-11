@@ -24,6 +24,7 @@
     "@mozaik/babel-preset": "^1.0.0-alpha.6",
     "@mozaik/ui": "^2.0.0-alpha.15",
     "chalk": "1.1.3",
+    "color": "^3.1.2",
     "convict": "^2.0.0",
     "d3-ease": "^1.0.5",
     "emojilib": "^2.4.0",
@@ -55,11 +56,6 @@
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "devDependencies": {
-    "jest": "^20.0.4",
-    "jest-styled-components": "^4.11.0-0",
-    "enzyme": "^3.3.0",
-    "enzyme-adapter-react-15": "^1.0.5",
-    "enzyme-to-json": "^3.3.1",
     "@babel/preset-es2017": "^7.0.0-beta.53",
     "ava": "^0.17.0",
     "babel-cli": "^6.24.1",
@@ -69,15 +65,20 @@
     "babel-preset-react": "6.5.0",
     "coveralls": "^2.11.15",
     "cross-env": "^5.0.1",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-15": "^1.0.5",
+    "enzyme-to-json": "^3.3.1",
     "eslint": "^5.16.0",
     "eslint-plugin-react": "^7.1.0",
+    "jest": "^20.0.4",
+    "jest-styled-components": "^4.11.0-0",
     "lint-staged": "^4.0.2",
     "watch": "^1.0.2"
   },
   "peerDependencies": {
     "@mozaik/ui": "^2.0.0-alpha.15",
-    "react": "^16.0.0",
-    "mozaik": ">=1.4.2"
+    "mozaik": ">=1.4.2",
+    "react": "^16.0.0"
   },
   "scripts": {
     "lint": "eslint ./src/** ./test/**",
