@@ -1,4 +1,4 @@
-class EchoClient {
+export default class EchoClient {
 
   constructor(echoMessage) {
     this.echoMessage = echoMessage;
@@ -14,7 +14,9 @@ class EchoClient {
     if (this.id) {
       this.close();
     }
+
     setInterval(() => {
+
       if(getRandom(0, 100) < 40 && this.cb) {
         this.onMessage(this.echoMessage);
       }
@@ -36,7 +38,3 @@ class EchoClient {
 function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
-
-export default (msg) => {
-  return new EchoClient(msg);
-};

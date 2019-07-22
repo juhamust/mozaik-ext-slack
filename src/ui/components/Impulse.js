@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import reactMixin from 'react-mixin';
-import { ListenerMixin } from 'reflux';
-import Mozaik from 'mozaik/browser';
-var d3 = require('d3');
-var ease = require('d3-ease');
-import _ from 'lodash';
+import ReactDOM from 'react-dom';
 
+import PropTypes from 'prop-types';
+
+import Mozaik from '@mozaik/ui';
+
+var d3   = require('d3');
+var ease = require('d3-ease');
+
+import _ from 'lodash';
 
 function pulse(opts) {
   for (var i = 1; i < opts.count; ++i) {
@@ -18,9 +21,9 @@ function pulse(opts) {
       .attr('fill', 'transparent')
       .attr('stroke', `rgba(${opts.color.r}, ${opts.color.g}, ${opts.color.b}, 255)`)
       .transition()
-        .delay(Math.pow(i, 2.5) * opts.delay)
-        .duration(opts.duration)
-        .ease(ease.easeQuadIn)
+      .delay(Math.pow(i, 2.5) * opts.delay)
+      .duration(opts.duration)
+      .ease(ease.easeQuadIn)
       .attr('stroke-width', 2)
       .attr('stroke', `rgba(${opts.color.r}, ${opts.color.g}, ${opts.color.b}, 0)`)
       .attr('r', opts.radius)
@@ -35,13 +38,16 @@ function getRandom(min, max) {
 class Impulse extends Component {
   constructor(props) {
     super(props);
+
     this.mounted = false;
+
     this.state = {
       colorIndex: 0,
       height: 400,
       width: 400
     };
-    this.config = _.defaultsDeep(this.props.config || {}, {
+
+    this.config = _.defaultsDeep(this.props.config || { }, {
       delay: 10,
       count: 8,
       duration: 4000,
@@ -49,9 +55,9 @@ class Impulse extends Component {
       // Defaults to Slack colours
       colors: [
         { r: 112, g: 204, b: 220 }, // blue
-        { r: 223, g: 168, b: 35 }, // orange
-        { r: 225, g: 22, b: 101 }, // red
-        { r: 61, g: 186, b: 145 } // green
+        { r: 223, g: 168, b: 35  }, // orange
+        { r: 225, g: 22,  b: 101 }, // red
+        { r: 61,  g: 186, b: 145 }  // green
       ]
     });
   }
@@ -60,9 +66,10 @@ class Impulse extends Component {
     this.mounted = true;
 
     // Get area size
-    const bodyElement = this._body.getDOMNode();
+    const bodyElement = ReactDOM.findDOMNode(this._body);
+
     this.setState({
-      element: this._svg.getDOMNode(),
+      element: ReactDOM.findDOMNode(this._svg),
       height: bodyElement.clientHeight,
       width: bodyElement.clientWidth
     });
@@ -75,6 +82,7 @@ class Impulse extends Component {
   componentWillReceiveProps() {
     // Increase / reset the color index on each update
     const nextColorIndex = this.state.colorIndex < (this.config.colors.length - 1) ? this.state.colorIndex + 1 : 0;
+
     this.setState({ colorIndex: nextColorIndex });
   }
 
@@ -98,23 +106,22 @@ class Impulse extends Component {
 
     return (
       <div className="slack__impulse--body widget__body" ref={(c) => this._body = c}>
-        <svg ref={(c) => this._svg = c} height={this.state.height} width={this.state.width}></svg>
+        <svg ref={(c) => this._svg = c} height={this.state.height} width={this.state.width}/>
       </div>
     );
   }
 }
 
 Impulse.propTypes = {
-  title: React.PropTypes.string,
-  channel: React.PropTypes.string,
-  config: React.PropTypes.object,
-  message: React.PropTypes.string
+  title: PropTypes.string,
+  channel: PropTypes.string,
+  config: PropTypes.object,
+  message: PropTypes.string
 };
 
 Impulse.defaultProps = {
   title: 'Slack',
   channel: null
 };
-
 
 export default Impulse;

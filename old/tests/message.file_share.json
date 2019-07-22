@@ -1,0 +1,91 @@
+{
+  "type": "message",
+  "subtype": "file_share",
+  "text": "",
+  "file": {
+    "id": "F2Q9ACZRP",
+    "created": 1476716120,
+    "timestamp": 1476716120,
+    "name": "test.jpg",
+    "title": "test",
+    "mimetype": "image/jpeg",
+    "filetype": "jpg",
+    "pretty_type": "JPEG",
+    "user": "U02558FA2",
+    "editable": false,
+    "size": 33691,
+    "mode": "hosted",
+    "is_external": false,
+    "external_type": "",
+    "is_public": true,
+    "public_url_shared": false,
+    "display_as_bot": false,
+    "username": "",
+    "url_private": "https://files.slack.com/files-pri/T0254ARL8-F2Q9ACZRP/test.jpg",
+    "url_private_download": "https://files.slack.com/files-pri/T0254ARL8-F2Q9ACZRP/download/test.jpg",
+    "thumb_64": "https://files.slack.com/files-tmb/T0254ARL8-F2Q9ACZRP-e8e031f137/test_64.jpg",
+    "thumb_80": "https://files.slack.com/files-tmb/T0254ARL8-F2Q9ACZRP-e8e031f137/test_80.jpg",
+    "thumb_360": "https://files.slack.com/files-tmb/T0254ARL8-F2Q9ACZRP-e8e031f137/test_360.jpg",
+    "thumb_360_w": 360,
+    "thumb_360_h": 151,
+    "thumb_480": "https://files.slack.com/files-tmb/T0254ARL8-F2Q9ACZRP-e8e031f137/test_480.jpg",
+    "thumb_480_w": 480,
+    "thumb_480_h": 201,
+    "thumb_160": "https://files.slack.com/files-tmb/T0254ARL8-F2Q9ACZRP-e8e031f137/test_160.jpg",
+    "image_exif_rotation": 1,
+    "original_w": 522,
+    "original_h": 219,
+    "permalink": "https://sc5.slack.com/files/juham/F2Q9ACZRP/test.jpg",
+    "permalink_public": "https://slack-files.com/T0254ARL8-F2Q9ACZRP-034feb336a",
+    "channels": [
+      "C02GVP9DZ"
+    ],
+    "groups": [],
+    "ims": [],
+    "comments_count": 1,
+    "initial_comment": {
+      "id": "Fc2Q9FK4CS",
+      "created": 1476716120,
+      "timestamp": 1476716120,
+      "user": "U02558FA2",
+      "is_intro": true,
+      "comment": "!dashboard",
+      "channel": ""
+    }
+  },
+  "user": {
+    "name": "Juha Mustonen",
+    "profileImage": "https://avatars.slack-edge.com/2016-04-12/33980945223_7de52a1e5be0e9125d07_48.jpg"
+  },
+  "upload": true,
+  "display_as_bot": false,
+  "username": "<@U02558FA2|juham>",
+  "bot_id": null,
+  "team": "T0254ARL8",
+  "channel": {
+    "id": "C02GVP9DZ",
+    "name": "test-juham",
+    "is_channel": true,
+    "created": 1408772266,
+    "creator": "U02558FA2",
+    "is_archived": false,
+    "is_general": false,
+    "is_member": true,
+    "members": [
+      "U02558FA2"
+    ],
+    "topic": {
+      "value": "",
+      "creator": "",
+      "last_set": 0
+    },
+    "purpose": {
+      "value": "Dev/testing by Juha Mustonen",
+      "creator": "U02558FA2",
+      "last_set": 1408772266
+    },
+    "num_members": 1
+  },
+  "ts": "1476716122.000021",
+  "image": "images/1476716122201.jpg"
+}
